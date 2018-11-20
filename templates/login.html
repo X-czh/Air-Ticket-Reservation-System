@@ -3,8 +3,12 @@
 </head>
 <body>
 <form action="/loginAuth" method="POST">
-	<input type="text" name = "username" placeholder="username" required/> </br>
-	<input type="password" name = "password" placeholder="password" required/></br>
+	<input type="text" name="username" placeholder="username" required/> </br>
+	<input type="password" name="password" placeholder="password" required/></br>
+	<select name="usertype">
+		<option value="customer">Customer</option>
+		<option value="booking_agent">Booking Agent</option>
+		<option value="airline_staff">Airline Staff</option>
 	<input type="submit" value = Login />
 	{% if error %}
 		<p class="error"><strong>Error:</strong> {{error}}</p>

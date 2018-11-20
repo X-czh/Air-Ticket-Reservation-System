@@ -8,8 +8,8 @@ app = Flask(__name__)
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
                        user='root',
-                       password='',
-                       db='blog',
+                       password='password',
+                       db='air_ticket',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
 
@@ -32,13 +32,15 @@ def register():
 @app.route('/loginAuth', methods=['GET', 'POST'])
 def loginAuth():
 	#grabs information from the forms
+	usertype = request.form['usertype']
 	username = request.form['username']
 	password = request.form['password']
 
 	#cursor used to send queries
 	cursor = conn.cursor()
 	#executes query
-	query = 'SELECT * FROM user WHERE username = %s and password = %s'
+	attr_username = 'username' if usertype == 'airline_staff' else 'email'
+	query = 'SELECT * FROM {} WHERE {} = %s and password = %s'.format(usertype, attr_username)
 	cursor.execute(query, (username, password))
 	#stores the results in a variable
 	data = cursor.fetchone()
@@ -49,7 +51,7 @@ def loginAuth():
 		#creates a session for the the user
 		#session is a built in
 		session['username'] = username
-		return redirect(url_for('home'))
+		return render_template('index.html')
 	else:
 		#returns an error message to the html page
 		error = 'Invalid login or username'
