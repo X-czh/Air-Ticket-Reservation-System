@@ -4,10 +4,11 @@
 <body>
 <form action="/upcoming" method="POST">
 	<h1>Welcome {{username}}</h1>
-    <input type="text" name="Arrival_Date" placeholder="Enter Arrival Date" /> 
-    <input type="text" name="Departure_Date" placeholder="Enter Departure Date" /> 
-    <input type="text" name="Arrival_City" placeholder="Enter Arrival City">
-    <input type="text" name="Departure_City" placeholder="Enter Departure City">
+    <input type="text" name="arrival_time" placeholder="Enter Arrival Date" /> 
+    <input type="text" name="departure_time" placeholder="Enter Departure Date" /> 
+    <input type="text" name="arrival_airport" placeholder="Enter Arrival City">
+    <input type="text" name="departure_airport" placeholder="Enter Departure City">
+    
 	<input type="submit" value = Search />
 </form>
 
@@ -32,8 +33,8 @@
 
 <form action="/status" method="POST">
     <input type="text" name="flight_num" placeholder="Enter Flight Number" /> </br>
-    <input type="text" name="Arrival_Date" placeholder="Enter Arrival Date" /> </br>
-    <input type="text" name="Departure_Date" placeholder="Enter Departure Date" /> </br>
+    <input type="text" name="arrival_time" placeholder="Enter Arrival Date" /> </br>
+    <input type="text" name="departure_time" placeholder="Enter Departure Date" /> </br>
 	<input type="submit" value = Search />
 </form>
 
