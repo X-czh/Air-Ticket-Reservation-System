@@ -4,19 +4,47 @@
 <body>
 <form action="/upcoming" method="POST">
 	<h1>Welcome {{username}}</h1>
-    <input type="text" name="arrival_time" placeholder="Enter Arrival Date" /> 
-    <input type="text" name="departure_time" placeholder="Enter Departure Date" /> 
-    <input type="text" name="arrival_airport" placeholder="Enter Arrival City">
-    <input type="text" name="departure_airport" placeholder="Enter Departure City">
+    <input type="text" name="arrival_date" placeholder="Enter Arrival Date" /> 
+    <input type="text" name="departure_date" placeholder="Enter Departure Date" /> 
+    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport">
+    <input type="text" name="departure_airport" placeholder="Enter Departure Airport">
     
 	<input type="submit" value = Search />
 </form>
 
-<style type="text/css">
-	table, th, td{
-		border: 1px solid black;
-	}
-</style>
+{% if result %}
+<table>
+    <th>Airline Name</th>
+    <th>Airplane ID</th>
+    <th>Flight Number</th>
+    <th>Departure Airport</th>
+    <th>Departure Time</th>
+    <th>Arrival Airport</th>
+    <th>Arrival Time</th>
+    <th>Ticket Price</th>
+    <th>Status</th>
+
+
+    {% for flight in result %}
+    <tr>
+        <td>{{ flight.airline_name }}</td>
+        <td>{{ flight.flight_num }}</td>
+        <td>{{ flight.airplane_id }}</td>
+        <td>{{ flight.departure_airport }}</td>
+        <td>{{ flight.departure_time }}</td>
+        <td>{{ flight.arrival_airport }}</td>
+        <td>{{ flight.arrival_time }}</td>
+        <td>{{ flight.price }}</td>
+        <td>{{ flight.status }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+{% endif %}
+
+{% if error %}
+<p class="error"><strong>Error:</strong>{{error}}</p>
+{% endif %}
 
 <table>
     <th>Departure_Time</th>
@@ -28,16 +56,12 @@
 
 </table>
 
-
-
-
 <form action="/status" method="POST">
     <input type="text" name="flight_num" placeholder="Enter Flight Number" /> </br>
-    <input type="text" name="arrival_time" placeholder="Enter Arrival Date" /> </br>
-    <input type="text" name="departure_time" placeholder="Enter Departure Date" /> </br>
+    <input type="text" name="arrival_date" placeholder="Enter Arrival Date" /> </br>
+    <input type="text" name="departure_date" placeholder="Enter Departure Date" /> </br>
 	<input type="submit" value = Search />
 </form>
-
 
 <table>
 	<th>Date</th>
@@ -45,14 +69,18 @@
     <th>Arrival City</th>
     <th>Departure City</th>
     <th>Status</th>
-    
-
 
 </table>
 
 <a href="/logout">Logout</a>
 
-</body>
 
+<style type="text/css">
+	table, th, td{
+		border: 1px solid black;
+	}
+</style>
+
+</body>
 
 </html>
