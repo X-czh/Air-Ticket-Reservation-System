@@ -9,75 +9,83 @@
 	Register
 </h1>
 
-<form action='/registerAuth' method='POST'>
+User Type: <br>
+<select id="select", name="usertype", onchange="change()">
+	<option value="customer">Customer</option>
+	<option value="booking_agent">Booking Agent</option>
+	<option value="airline_staff">Airline Staff</option>
+</select><br><br>
 
-	User Type: <br>
-	<select id='select', name='usertype', onchange='change()'>
-		<option value='customer'>Customer</option>
-		<option value='booking_agent'>Booking Agent</option>
-		<option value='airline_staff'>Airline Staff</option>
-	</select> <br> <br>
+<form id="customer_form" action="/registerAuth" method="POST">
+	<input type="hidden" name="usertype" value="customer">
 
-	<div id='customer_form'>
-		Email (this will be your username for login): <br>
-		<input type='email' name='email' maxlength='50' required/> <br> <br>
-		Password: <br>
-		<input type='password' name='password' maxlength='50' required/> <br> <br>
-		Name: <br>
-		<input type='text' name='name' maxlength='50' required/> <br> <br>
-		Building Number: <br>
-		<input type='text' name='building_number' maxlength='30' required/> <br> <br>
-		Street: <br>
-		<input type='text' name='street' maxlength='30' required/> <br> <br>
-		City: <br>
-		<input type='text' name='city' maxlength='30' required/> <br> <br>
-		State: <br>
-		<input type='text' name='state' maxlength='30' required/> <br> <br>
-		Phone Number: <br>
-		<input type='text' name='phone_number' maxlength='11' required/> <br> <br>
-		Passport Number: <br>
-		<input type='text' name='passport_number' maxlength="30" required/> <br> <br>
-		Passport Expiration Date: <br>
-		<input type='date' name='passport_expiration' required/> <br> <br>
-		Passport Country: <br>
-		<input type='text' name='passport_country' maxlength="50" required/> <br> <br>
-		Date of Birth: <br>
-		<input type='date' name='date_of_birth' required/> <br> <br>
-	</div>
+	Email (this will be your username for login): <br>
+	<input type="email" name="email" required><br>
+	Password: <br>
+	<input type="password" name="password" required><br> 
+	Name: <br>
+	<input type="text" name="name" required><br>
+	Building Number: <br>
+	<input type="text" name="building_number" required><br>
+	Street: <br>
+	<input type="text" name="street" required><br>
+	City: <br>
+	<input type="text" name="city" required><br>
+	State: <br>
+	<input type="text" name="state" required><br>
+	Phone Number: <br>
+	<input type="text" name="phone_number" required><br>
+	Passport Number: <br>
+	<input type="text" name="passport_number" required><br>
+	Passport Expiration Date: <br>
+	<input type="date" name="passport_expiration" required><br>
+	Passport Country: <br>
+	<input type="text" name="passport_country" required><br>
+	Date of Birth: <br>
+	<input type="date" name="date_of_birth" required><br><br>
 
-	<div id='booking_agent_form'>
-		Email (this will be your username for login): <br>
-		<input type='text' name='email' maxlength='50' required/> <br> <br>
-		Password: <br>
-		<input type='text' name='password' maxlength='50' required/> <br> <br>
-		Booking Agent ID: <br>
-		<input type='text' name='booking_agent_id' maxlength='11' required/> <br> <br>
-	</div>
-
-	<div id='airline_staff_form'>
-		Username: <br>
-		<input type='text' name='username' maxlength='50' required/> <br> <br>
-		Password: <br>
-		<input type='password' name='password' maxlength='50' required/> <br> <br>
-		First Name: <br>
-		<input type='text' name='first_name' maxlength='50' required/> <br> <br>
-		Last Name: <br>
-		<input type='text' name='last_name' maxlength='50' required/> <br> <br>
-		Date of Birth: <br>
-		<input type='date' name='date_of_birth' required/> <br> <br>
-		Airline Name: <br>
-		<input type='text' name='airline_name' maxlength='50' required/> <br> <br>
-	</div>
-
-	<input type='submit' value = Register />
-
-	{% if error %}
-		<p class='error'><strong>Error:</strong> {{error}}</p>
-	{% endif %}
-	
+	<input type="submit" value="Register"><br><br>
 </form>
 
-<a href='..'>Go back</a>
+<form id="booking_agent_form" action="/registerAuth" method="POST">
+	<input type="hidden" name="usertype" value="booking_agent">
+
+	Email (this will be your username for login): <br>
+	<input type="email" name="email" required><br>
+	Password: <br>
+	<input type="password" name="password" required><br>
+	Booking Agent ID: <br>
+	<input type="text" name="booking_agent_id" required><br><br>
+
+	<input type="submit" value="Register"><br><br>
+</form>
+
+<form id="airline_staff_form" action="/registerAuth" method="POST">
+	<input type="hidden" name="usertype" value="airline_staff">
+
+	Username: <br>
+	<input type="text" name="username" required><br>
+	Password: <br>
+	<input type="password" name="password" required><br>
+	First Name: <br>
+	<input type="text" name="first_name" required><br>
+	Last Name: <br>
+	<input type="text" name="last_name" required><br>
+	Date of Birth: <br>
+	<input type="date" name="date_of_birth" required><br> 
+	Airline Name: <br>
+	<input type="text" name="airline_name" required><br><br>
+
+	<input type="submit" value="Register"><br><br>
+</form>
+	
+
+{% if error %}
+	<p class="error"><strong>Error:</strong> {{error}}</p>
+{% endif %}
+
+
+<a href="..">Go back</a>
 
 <style>
 
@@ -89,7 +97,7 @@
     
     h1 {
     	font-size: 36pt;
-        font-weight:bold;
+        font-weight: bold;
     }
 	
 	#customer_form {
@@ -108,25 +116,25 @@
 
 <script>
 	function change() {
-		var usertype = document.getElementById('select').value;
-		var customer_form = document.getElementById('customer_form');
-		var booking_agent_form = document.getElementById('booking_agent_form');
-		var airline_staff_form = document.getElementById('airline_staff_form');
+		var usertype = document.getElementById("select").value;
+		var customer_form = document.getElementById("customer_form");
+		var booking_agent_form = document.getElementById("booking_agent_form");
+		var airline_staff_form = document.getElementById("airline_staff_form");
 		switch (usertype) {
-			case 'customer':
-				customer_form.style.display = 'block';
-				booking_agent_form.style.display = 'none';
-				airline_staff_form.style.display = 'none';
+			case "customer":
+				customer_form.style.display = "block";
+				booking_agent_form.style.display = "none";
+				airline_staff_form.style.display = "none";
 				break;
-			case 'booking_agent':
-				booking_agent_form.style.display = 'block';
-				customer_form.style.display = 'none';
-				airline_staff_form.style.display = 'none';
+			case "booking_agent":
+				booking_agent_form.style.display = "block";
+				customer_form.style.display = "none";
+				airline_staff_form.style.display = "none";
 				break;
-			case 'airline_staff':
-				airline_staff_form.style.display = 'block';
-				customer_form.style.display = 'none';
-				booking_agent_form.style.display = 'none';
+			case "airline_staff":
+				airline_staff_form.style.display = "block";
+				customer_form.style.display = "none";
+				booking_agent_form.style.display = "none";
 				break;
 		}
 	}

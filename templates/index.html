@@ -2,14 +2,15 @@
 <head>
 </head>
 <body>
+
 <form action="/upcoming" method="POST">
 	<h1>Welcome {{username}}</h1>
     <input type="text" name="arrival_date" placeholder="Enter Arrival Date" /> 
     <input type="text" name="departure_date" placeholder="Enter Departure Date" /> 
-    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport">
-    <input type="text" name="departure_airport" placeholder="Enter Departure Airport">
+    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport"/>
+    <input type="text" name="departure_airport" placeholder="Enter Departure Airport"/>
     
-	<input type="submit" value = Search />
+	<input type="submit" value="Search"/>
 </form>
 
 {% if result %}
@@ -45,16 +46,6 @@
 {% if error %}
 <p class="error"><strong>Error:</strong>{{error}}</p>
 {% endif %}
-
-<table>
-    <th>Departure_Time</th>
-	<th>Arrival_Time</th>
-    <th>Flight_num</th>
-    <th>Arrival_City</th>
-	<th>Departure_City</th>
-
-
-</table>
 
 <form action="/status" method="POST">
     <input type="text" name="flight_num" placeholder="Enter Flight Number" /> </br>

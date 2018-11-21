@@ -16,52 +16,7 @@ conn = pymysql.connect(host='localhost',
 #Define a route to hello function
 @app.route('/')
 def hello():
-	return render_template('index.html')
-
-@app.route('/upcoming', methods=['GET', 'POST'])
-def checkUpcoming():
-	#grabs information from the forms
-	departure_airport = request.form['departure_airport']
-	departure_date = request.form['departure_date']
-	arrival_airport = request.form['arrival_airport']
-	arrival_date = request.form['arrival_date']
-
-	#cursor used to send queries
-	cursor = conn.cursor()
-	#executes query
-	query = 'SELECT * FROM flight WHERE departure_airport = %s AND DATE(departure_time) = %s \
-		arrival_airport = %s AND DATE(arrival_time) = %s'
-	print(query)
-	cursor.execute(query, (departure_airport, departure_date, arrival_airport, arrival_date))
-	#stores the results in a variable
-	data = cursor.fetchall()
-	error = None
-	if data:
-		return render_template('index.html', result = data)
-	else:
-		return render_template('index.html', error = error) 
-
-@app.route('/status', methods=['GET', 'POST'])
-def checkStatus():
-	#grabs information from the forms
-	flight_num = request.form['flight_num']
-	departure_date = request.form['departure_date']
-	arrival_date = request.form['arrival_date']
-
-	#cursor used to send queries
-	cursor = conn.cursor()
-	#executes query
-	query = 'SELECT status FROM flight WHERE flight_num = %s AND \
-		DATE(departure_time) = %s AND DATE(arrival_time) = %s'
-	cursor.execute(query, (flight_num, departure_date, arrival_date))
-	#stores the results in a variable
-	data = cursor.one()
-	#use fetchall() if you are expecting more than 1 data row
-	error = None
-	if data:
-		#If the previous query returns data, then user exists
-		error = 'This user already exists'
-		return render_template('register.html', error = error)
+	return render_template('index.html', result = None)
 
 #Define route for login
 @app.route('/login')
@@ -74,7 +29,7 @@ def register():
 	return render_template('register.html')
 
 #Authenticates the login
-@app.route('/loginAuth', methods=['GET', 'POST'])
+@app.route('/loginAuth', methods=['POST'])
 def loginAuth():
 	#grabs information from the forms
 	usertype = request.form['usertype']
@@ -103,38 +58,48 @@ def loginAuth():
 		return render_template('login.html', error=error)
 
 #Authenticates the register
-@app.route('/registerAuth', methods=['GET', 'POST'])
+@app.route('/registerAuth', methods=['POST'])
 def registerAuth():
 	#grabs usertype
 	usertype = request.form['usertype']
-	print(usertype)
+	
+	#if usertype is customer
 	if usertype == 'customer':
 		#grabs information from the forms
 		email = request.form['email']
 		password = request.form['password']
 		name = request.form['name']
+		building_number = request.form['building_number']
+		street = request.form['street']
+		city = request.form['city']
+		state = request.form['state']
+		phone_number = request.form['phone_number']
+		passport_number = request.form['passport_number']
 		passport_expiration = request.form['passport_expiration']
 		passport_country = request.form['passport_country']
+		date_of_birth = request.form['date_of_birth']
+
 		#cursor used to send queries
 		cursor = conn.cursor()
 		#executes query
-		attr_username = 'email'
-		query = 'SELECT * FROM {} WHERE {} = %s'.format(usertype, attr_username)
+		query = 'SELECT * FROM customer WHERE email = %s'
 		cursor.execute(query, (email))
 		#stores the results in a variable
 		data = cursor.fetchone()
-		#use fetchall() if you are expecting more than 1 data row
 		error = None
 		if data:
 			#If the previous query returns data, then user exists
 			error = 'This user already exists'
 			return render_template('register.html', error = error)
 		else:
-			ins = 'INSERT INTO user VALUES(%s, %s)'
-			cursor.execute(ins, (email, password))
+			ins = 'INSERT INTO customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+			cursor.execute(ins, (email, password, name, building_number, street, city, state,
+				phone_number, passport_number, passport_expiration, passport_country, date_of_birth))
 			conn.commit()
 			cursor.close()
 			return render_template('index.html')
+
+	#if usertype is booking_agent
 	elif usertype == 'booking_agent':
 		#grabs information from the forms
 		email = request.form['email']
@@ -144,51 +109,97 @@ def registerAuth():
 		#cursor used to send queries
 		cursor = conn.cursor()
 		#executes query
-		attr_username = 'email'
-		query = 'SELECT * FROM {} WHERE {} = %s'.format(usertype, attr_username)
-		print(query)
+		query = 'SELECT * FROM booking_agent WHERE email = %s'
 		cursor.execute(query, (email))
 		#stores the results in a variable
 		data = cursor.fetchone()
-		#use fetchall() if you are expecting more than 1 data row
 		error = None
 		if data:
 			#If the previous query returns data, then user exists
 			error = 'This user already exists'
 			return render_template('register.html', error = error)
 		else:
-			ins = 'INSERT INTO {} VALUES(%s, %s, %s)'.format(usertype)
+			ins = 'INSERT INTO booking_agent VALUES(%s, %s, %s)'
 			cursor.execute(ins, (email, password, booking_agent_id))
 			conn.commit()
 			cursor.close()
 			return render_template('index.html')
+
+	#if usertype is airline staff
 	else:
-		#if usertype is airline staff
-		pass
+		#grabs information from the forms
+		username = request.form['username']
+		password = request.form['password']
+		first_name = request.form['first_name']
+		last_name = request.form['last_name']
+		date_of_birth = request.form['date_of_birth']
+		airline_name = request.form['airline_name']
 
-@app.route('/home')
-def home():
-    
-    username = session['username']
-    cursor = conn.cursor()
-    query = 'SELECT ts, blog_post FROM blog WHERE username = %s ORDER BY ts DESC'
-    cursor.execute(query, (username))
-    data1 = cursor.fetchall() 
-    for each in data1:
-        print(each['blog_post'])
-    cursor.close()
-    return render_template('home.html', username=username, posts=data1)
+		#cursor used to send queries
+		cursor = conn.cursor()
+		#executes query
+		query = 'SELECT * FROM airline_staff WHERE username = %s'
+		cursor.execute(query, (username))
+		#stores the results in a variable
+		data = cursor.fetchone()
+		error = None
+		if data:
+			#If the previous query returns data, then user exists
+			error = 'This user already exists'
+			return render_template('register.html', error = error)
+		else:
+			ins = 'INSERT INTO airline_staff VALUES(%s, %s, %s, %s, %s, %s)'
+			cursor.execute(ins, (username, password, first_name, last_name,
+				date_of_birth, airline_name))
+			conn.commit()
+			cursor.close()
+			return render_template('index.html')
 
-@app.route('/post', methods=['GET', 'POST'])
-def post():
-	username = session['username']
+#Check upcoming flights
+@app.route('/upcoming', methods=['POST'])
+def checkUpcoming():
+	#grabs information from the forms
+	departure_airport = request.form['departure_airport']
+	departure_date = request.form['departure_date']
+	arrival_airport = request.form['arrival_airport']
+	arrival_date = request.form['arrival_date']
+
+	#cursor used to send queries
 	cursor = conn.cursor()
-	blog = request.form['blog']
-	query = 'INSERT INTO blog (blog_post, username) VALUES(%s, %s)'
-	cursor.execute(query, (blog, username))
-	conn.commit()
-	cursor.close()
-	return redirect(url_for('home'))
+	#executes query
+	query = 'SELECT * FROM flight WHERE departure_airport = %s AND DATE(departure_time) = %s \
+		arrival_airport = %s AND DATE(arrival_time) = %s'
+	print(query)
+	cursor.execute(query, (departure_airport, departure_date, arrival_airport, arrival_date))
+	#stores the results in a variable
+	data = cursor.fetchall()
+	error = None
+	if data:
+		return render_template('index.html', result = data)
+	else:
+		return render_template('index.html', error = error) 
+
+@app.route('/status', methods=['POST'])
+def checkStatus():
+	#grabs information from the forms
+	flight_num = request.form['flight_num']
+	departure_date = request.form['departure_date']
+	arrival_date = request.form['arrival_date']
+
+	#cursor used to send queries
+	cursor = conn.cursor()
+	#executes query
+	query = 'SELECT status FROM flight WHERE flight_num = %s AND \
+		DATE(departure_time) = %s AND DATE(arrival_time) = %s'
+	cursor.execute(query, (flight_num, departure_date, arrival_date))
+	#stores the results in a variable
+	data = cursor.one()
+	#use fetchall() if you are expecting more than 1 data row
+	error = None
+	if data:
+		#If the previous query returns data, then user exists
+		error = 'This user already exists'
+		return render_template('register.html', error = error)
 
 @app.route('/logout')
 def logout():
