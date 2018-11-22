@@ -39,6 +39,7 @@ def loginAuth():
 	if data:
 		# creates a session for the the user
 		session['username'] = username
+		session['usertype'] = usertype
 		return render_template('index.html')
 	else:
 		# returns an error message to the html page

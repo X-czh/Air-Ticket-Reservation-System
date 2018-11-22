@@ -12,7 +12,6 @@ conn = pymysql.connect(host='localhost',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
 
-
 # Register blueprints
 from air_ticket.views import general, customer, booking_agent, airline_staff
 app.register_blueprint(general.mod)
