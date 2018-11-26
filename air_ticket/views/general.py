@@ -6,17 +6,17 @@ mod = Blueprint('general', __name__)
 # Define route to hello function
 @mod.route('/')
 def hello():
-	return render_template('index.html', result = None)
+	return render_template('general/index.html', result = None)
 
 # Define route for login
 @mod.route('/login')
 def login():
-	return render_template('login.html')
+	return render_template('general/login.html')
 
 # Define route for register
 @mod.route('/register')
 def register():
-	return render_template('register.html')
+	return render_template('general/register.html')
 
 # Authenticates the login
 @mod.route('/loginAuth', methods=['POST'])
@@ -77,16 +77,17 @@ def registerAuth():
 		data = cursor.fetchone()
 		error = None
 		if data:
+			cursor.close()
 			# if the previous query returns data, then user exists
 			error = 'This user already exists'
-			return render_template('register.html', error = error)
+			return render_template('general/register.html', error = error)
 		else:
 			ins = 'INSERT INTO customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
 			cursor.execute(ins, (email, password, name, building_number, street, city, state,
 				phone_number, passport_number, passport_expiration, passport_country, date_of_birth))
 			conn.commit()
 			cursor.close()
-			return render_template('index.html')
+			return render_template('general/index.html')
 
 	# if usertype is booking_agent
 	elif usertype == 'booking_agent':
@@ -104,15 +105,16 @@ def registerAuth():
 		data = cursor.fetchone()
 		error = None
 		if data:
+			cursor.close()
 			# if the previous query returns data, then user exists
 			error = 'This user already exists'
-			return render_template('register.html', error = error)
+			return render_template('general/register.html', error = error)
 		else:
 			ins = 'INSERT INTO booking_agent VALUES(%s, %s, %s)'
 			cursor.execute(ins, (email, password, booking_agent_id))
 			conn.commit()
 			cursor.close()
-			return render_template('index.html')
+			return render_template('general/index.html')
 
 	# if usertype is airline staff
 	else:
@@ -133,16 +135,17 @@ def registerAuth():
 		data = cursor.fetchone()
 		error = None
 		if data:
+			cursor.close()
 			# if the previous query returns data, then user exists
 			error = 'This user already exists'
-			return render_template('register.html', error = error)
+			return render_template('general/register.html', error = error)
 		else:
 			ins = 'INSERT INTO airline_staff VALUES(%s, %s, %s, %s, %s, %s)'
 			cursor.execute(ins, (username, password, first_name, last_name,
 				date_of_birth, airline_name))
 			conn.commit()
 			cursor.close()
-			return render_template('index.html')
+			return render_template('general/index.html')
 
 # Check upcoming flights
 @mod.route('/upcoming', methods=['POST'])
@@ -164,9 +167,9 @@ def checkUpcoming():
 	data = cursor.fetchall()
 	error = None
 	if data:
-		return render_template('index.html', result = data)
+		return render_template('general/index.html', result = data)
 	else:
-		return render_template('index.html', error = error) 
+		return render_template('general/index.html', error = error) 
 
 @mod.route('/status', methods=['POST'])
 def checkStatus():
@@ -187,4 +190,4 @@ def checkStatus():
 	if data:
 		# if the previous query returns data, then user exists
 		error = 'This user already exists'
-		return render_template('register.html', error = error)
+		return render_template('general/register.html', error = error)
