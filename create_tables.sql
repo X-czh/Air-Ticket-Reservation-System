@@ -11,7 +11,7 @@ CREATE TABLE `airline` (
 
 CREATE TABLE `airline_staff` (
   `username` varchar(50) NOT NULL,
-  `password` varchar(50) NOT NULL,
+  `password` varchar(87) NOT NULL,
   `first_name` varchar(50) NOT NULL,
   `last_name` varchar(50) NOT NULL,
   `date_of_birth` date NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE `airport` (
 
 CREATE TABLE `booking_agent` (
   `email` varchar(50) NOT NULL,
-  `password` varchar(50) NOT NULL,
+  `password` varchar(87) NOT NULL,
   `booking_agent_id` int(11) NOT NULL,
   PRIMARY KEY(`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -68,7 +68,7 @@ CREATE TABLE `booking_agent` (
 CREATE TABLE `customer` (
   `email` varchar(50) NOT NULL,
   `name` varchar(50) NOT NULL,
-  `password` varchar(50) NOT NULL,
+  `password` varchar(87) NOT NULL,
   `building_number` varchar(30) NOT NULL,
   `street` varchar(30) NOT NULL,
   `city` varchar(30) NOT NULL,
