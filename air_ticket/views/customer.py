@@ -20,10 +20,11 @@ def viewMyFlights():
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
-	query = ''' SELECT *
-				FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
-				WHERE customer_email = %s AND departure_time > NOW()
-				ORDER BY departure_time '''
+	query = ''' 
+		SELECT *
+		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
+		WHERE customer_email = %s AND departure_time > NOW()
+		ORDER BY departure_time '''
 	cursor.execute(query, (customer_email))
 	# stores the results in a variable
 	data = cursor.fetchall()
@@ -67,11 +68,12 @@ def searchFlights():
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
-	query = ''' SELECT * 
-				FROM flight 
-				WHERE departure_airport = %s AND DATE(departure_time) = %s AND 
-					arrival_airport = %s 
-				ORDER BY departure_time '''
+	query = ''' 
+		SELECT * 
+		FROM flight 
+		WHERE departure_airport = %s AND DATE(departure_time) = %s AND 
+			arrival_airport = %s 
+		ORDER BY departure_time '''
 	cursor.execute(query, (departure_airport, departure_date, arrival_airport))
 	# stores the results in a variable
 	data = cursor.fetchall()
@@ -88,16 +90,18 @@ def trackMySpendingDefault():
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
-	query = ''' SELECT SUM(price) as total
-				FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
-				WHERE customer_email = %s AND purchase_date >= DATE_SUB(NOW(), INTERVAL 1 YEAR) '''
+	query = ''' 
+		SELECT SUM(price) as total
+		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
+		WHERE customer_email = %s AND purchase_date >= DATE_SUB(NOW(), INTERVAL 1 YEAR) '''
 	cursor.execute(query, (customer_email))
 	total = cursor.fetchone()
-	query = ''' SELECT YEAR(departure_time) as year, MONTH(departure_time) as month, SUM(price) as total
-				FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
-				WHERE customer_email = %s AND purchase_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-				GROUP BY year, month 
-				ORDER BY year DESC, month DESC '''
+	query = ''' 
+		SELECT YEAR(departure_time) as year, MONTH(departure_time) as month, SUM(price) as total
+		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
+		WHERE customer_email = %s AND purchase_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+		GROUP BY year, month 
+		ORDER BY year DESC, month DESC '''
 	cursor.execute(query, (customer_email))
 	monthwise = cursor.fetchall()
 	cursor.close()
@@ -115,16 +119,18 @@ def trackMySpendingOptional():
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
-	query = ''' SELECT SUM(price) as total
-				FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
-				WHERE customer_email = %s AND purchase_date BETWEEN(%s, %s) '''
+	query = ''' 
+		SELECT SUM(price) as total
+		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
+		WHERE customer_email = %s AND purchase_date BETWEEN(%s, %s) '''
 	cursor.execute(query, (customer_email, start_date, end_date))
 	total = cursor.fetchone()
-	query = ''' SELECT YEAR(departure_time) as year, MONTH(departure_time) as month, SUM(price) as total
-				FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
-				WHERE customer_email = %s AND purchase_date BETWEEN(%s, %s)
-				GROUP BY year, month 
-				ORDER BY year DESC, month DESC '''
+	query = ''' 
+		SELECT YEAR(departure_time) as year, MONTH(departure_time) as month, SUM(price) as total
+		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
+		WHERE customer_email = %s AND purchase_date BETWEEN(%s, %s)
+		GROUP BY year, month 
+		ORDER BY year DESC, month DESC '''
 	cursor.execute(query, (customer_email, start_date, end_date))
 	monthwise = cursor.fetchall()
 	cursor.close()
