@@ -1,6 +1,7 @@
 from functools import wraps
 from flask import url_for, flash, request, session, redirect
 
+
 def requires_login_customer(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -10,6 +11,7 @@ def requires_login_customer(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
 def requires_login_booking_agent(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -18,6 +20,7 @@ def requires_login_booking_agent(f):
             return redirect(url_for('general.login', next=request.path))
         return f(*args, **kwargs)
     return decorated_function
+
 
 def requires_login_airline_staff(f):
     @wraps(f)
