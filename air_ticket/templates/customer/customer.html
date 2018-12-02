@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Homepage</title>
+</head>
+<body>
+
+<form action="/viewMyFlights" method="POST">
+    <input type="submit" value="View My Upcoming Flights"/>
+</form>
+    
+    {% if result %}
+    <table>
+        <th>Ticket ID</th>
+        <th>Airline Name</th>
+        <th>Flight Number</th>
+        <th>Airplane ID</th>
+        <th>Departure Airport</th>
+        <th>Departure Time</th>
+        <th>Arrival Airport</th>
+        <th>Arrival Time</th>
+        <th>Ticket Price</th>
+        <th>Status</th>
+        <th>Date of Purchase</th>
+        <th>Booking Agent ID</th>
+        <th>Customer Email</th>
+    
+    
+        {% for flight in result %}
+        <tr>
+            <td>{{ flight.ticket_id }}</td>
+            <td>{{ flight.airline_name }}</td>
+            <td>{{ flight.flight_num }}</td>
+            <td>{{ flight.airplane_id }}</td>
+            <td>{{ flight.departure_airport }}</td>
+            <td>{{ flight.departure_time }}</td>
+            <td>{{ flight.arrival_airport }}</td>
+            <td>{{ flight.arrival_time }}</td>
+            <td>{{ flight.status}}</td>
+            <td>{{ flight.price }}</td>
+            <td>{{ flight.purchase_date }}</td>
+            <td>{{ flight.booking_agent_id}}</td>
+            <td>{{ flight.customer_email}}</td>
+                </form>
+        </tr>
+        {% endfor %}
+    
+    </table>
+    {% endif %}
+    
+    {% if error %}
+    <p class="error"><strong>Error:</strong>{{error}}</p>
+    {% endif %}
+
+
+
+<form action="/searchFlights" method="POST">
+    <h3>Search For Flights</h3>
+    <input type="text" name="departure_airport" placeholder="Enter Departure Airport" /> 
+    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport " /> 
+    <input type="text" name="departure_date" placeholder="Enter Departure Date"/>    
+    <input type="submit" value="Search"/>
+</form>
+    
+    {% if result %}
+    <table>
+        <th>Ticket ID</th>
+        <th>Airline Name</th>
+        <th>Flight Number</th>
+        <th>Airplane ID</th>
+        <th>Departure Airport</th>
+        <th>Departure Time</th>
+        <th>Arrival Airport</th>
+        <th>Arrival Time</th>
+        <th>Ticket Price</th>
+        <th>Status</th>
+
+    
+        {% for flight in result %}
+        <tr>
+            <td>{{ flight.ticket_id }}</td>
+            <td>{{ flight.airline_name }}</td>
+            <td>{{ flight.flight_num }}</td>
+            <td>{{ flight.airplane_id }}</td>
+            <td>{{ flight.departure_airport }}</td>
+            <td>{{ flight.departure_time }}</td>
+            <td>{{ flight.arrival_airport }}</td>
+            <td>{{ flight.arrival_time }}</td>
+            <td>{{ flight.price }}</td>
+            <td>{{ flight.status }}</td>
+            <td>
+                <form action="/purchaseTickets" method = "POST">
+                    <input type="hidden" name="airline_name" value="{{ flight.airline_name }}"/>
+                    <input type="hidden" name="flight_num" value="{{ flight.flight_num }}"/>
+                    <input type="submit" value="Buy Ticket"/>
+                    
+                    {% if result %}
+                    alert("{{ result }}");
+                    {% endif %}
+
+                </form>
+        </tr>
+        {% endfor %}
+    
+    </table>
+    {% endif %}
+        
+    {% if error %}
+    <p class="error"><strong>Error:</strong>{{error}}</p>
+    {% endif %}
+
+
+
+<form action="/trackMySpendingOptional" method="POST">
+    <h3> Track My Spending </h3>
+    <h3> Start - End</h3>
+    <input type="date" name="start_date" placeholder="Start Date" /> 
+    <input type="date" name="end_date" palceholder="End Date" />
+    <input type="submit" value="Search"/>
+</form>
+    {% if total %}
+    {% if monthwise %}
+    <script src='static/Chart.min.js'></script>
+    <body>
+    <h3>Total Spending: "{{ total }}"</h3>
+    <canvas id="chart" width="600" height="400"></canvas>
+    <script>
+       var barData = {
+       labels : [{% for value in monthwise %}
+                      "{{ value.month }}",
+                  {% endfor %}],
+       datasets : [
+          {
+                fillColor: "rgba(151,187,205,0.2)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+             data : [{% for value in monthwise %}
+                          {{ value.total }},
+                        {% endfor %}]
+          }
+          ]
+       }
+     
+       var mychart = document.getElementById("chart").getContext("2d");
+     
+       steps = 10
+       max = 10
+       // draw bar chart
+       new Chart(mychart).Bar(barData, {
+            scaleOverride: true,
+            scaleSteps: steps,
+            scaleStepWidth: Math.ceil(max / steps),
+            scaleStartValue: 0,
+            scaleShowVerticalLines: true,
+            scaleShowGridLines : true,
+            barShowStroke : true,
+            scaleShowLabels: true
+       });
+     
+    </script>
+    </body>
+
+
+</body>
+
+</html>
