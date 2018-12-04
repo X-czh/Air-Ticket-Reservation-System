@@ -20,11 +20,11 @@ def viewMyFlights():
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
-	query = ''' 
-		SELECT *
-		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
-		WHERE customer_email = %s AND departure_time > NOW()
-		ORDER BY departure_time '''
+	query = (
+		'SELECT *',
+		'FROM purchases NATURAL JOIN ticket NATURAL JOIN flight',
+		'WHERE customer_email = %s AND departure_time > NOW()',
+		'ORDER BY departure_time')
 	cursor.execute(query, (customer_email))
 	# stores the results in a variable
 	data = cursor.fetchall()
@@ -119,10 +119,10 @@ def trackMySpendingOptional():
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
-	query = ''' 
-		SELECT SUM(price) as total
-		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
-		WHERE customer_email = %s AND purchase_date BETWEEN(%s, %s) '''
+	query = (
+		'SELECT SUM(price) as total',
+		'FROM purchases NATURAL JOIN ticket NATURAL JOIN flight',
+		'WHERE customer_email = %s AND purchase_date BETWEEN(%s, %s)')
 	cursor.execute(query, (customer_email, start_date, end_date))
 	total = cursor.fetchone()
 	query = ''' 

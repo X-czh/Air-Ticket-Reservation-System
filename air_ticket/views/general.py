@@ -25,6 +25,7 @@ def register():
 # Check upcoming flights
 @mod.route('/upcoming', methods=['POST'])
 def checkUpcoming():
+	#TODO
 	# grabs information from the forms
 	departure_airport = request.form['departure_airport']
 	departure_date = request.form['departure_date']
@@ -95,7 +96,7 @@ def loginAuth():
 			# creates a session for the the user
 			session['username'] = username
 			session['usertype'] = usertype
-			return redirect(url_for('customer.index'))
+			return redirect(url_for('{}.homepage'.format(usertype)))
 		else:
 			error = 'Incorrect password!'
 	else:
