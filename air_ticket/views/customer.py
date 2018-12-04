@@ -20,12 +20,12 @@ def viewMyFlights():
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
-	query = (
-		'SELECT *',
-		'FROM purchases NATURAL JOIN ticket NATURAL JOIN flight',
-		'WHERE customer_email = %s AND departure_time > NOW()',
-		'ORDER BY departure_time')
-	cursor.execute(query, (customer_email))
+	query = '''
+		SELECT *
+		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
+		WHERE customer_email = %s AND departure_time > NOW()
+		ORDER BY departure_time '''
+	cursor.execute(query, customer_email)
 	# stores the results in a variable
 	data = cursor.fetchall()
 	cursor.close()
@@ -43,21 +43,21 @@ def purchaseTickets():
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# generates ticket_id
-	query = 'SELECT COUNT(*) FROM ticket'
+	query = 'SELECT COUNT(*) as count FROM ticket'
 	cursor.execute(query)
-	count = cursor.fetchone()
-	ticket_id = count + 1
+	data = cursor.fetchone()
+	ticket_id = data['count'] + 1
 	# executes updates
 	ins_ticket = 'INSERT INTO ticket VALUES(%s, %s, %s)'
 	cursor.execute(ins_ticket, (ticket_id, airline_name, flight_num))
-	ins_purchases = 'INSERT INTO purchase VALUES(%s, %s, NULL, CURDATE())'
+	ins_purchases = 'INSERT INTO purchases VALUES(%s, %s, NULL, CURDATE())'
 	cursor.execute(ins_purchases, (ticket_id, customer_email))
 	conn.commit()
 	cursor.close()
-	return render_template('customer/index.html')	
+	return render_template('customer/index.html')
 
 # Search for flights
-@mod.route('/searchFlighs', methods=['POST'])
+@mod.route('/searchFlights', methods=['POST'])
 @requires_login_customer
 def searchFlights():
 	# grabs information
@@ -119,10 +119,10 @@ def trackMySpendingOptional():
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
-	query = (
-		'SELECT SUM(price) as total',
-		'FROM purchases NATURAL JOIN ticket NATURAL JOIN flight',
-		'WHERE customer_email = %s AND purchase_date BETWEEN(%s, %s)')
+	query = '''
+		SELECT SUM(price) as total
+		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
+		WHERE customer_email = %s AND purchase_date BETWEEN(%s, %s) '''
 	cursor.execute(query, (customer_email, start_date, end_date))
 	total = cursor.fetchone()
 	query = ''' 

@@ -5,7 +5,7 @@
 </head>
 <body>
 
-<form action="/customer/viewMyFlights" method="POST">
+<form action="viewMyFlights" method="POST">
     <input type="submit" value="View My Upcoming Flights"/>
 </form>
     
@@ -54,7 +54,7 @@
 
 
 
-<form action="customer/searchFlights" method="POST">
+<form action="searchFlights" method="POST">
     <h3>Search For Flights</h3>
     <input type="text" name="departure_airport" placeholder="Enter Departure Airport" /> 
     <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport " /> 
@@ -89,7 +89,7 @@
             <td>{{ flight.price }}</td>
             <td>{{ flight.status }}</td>
             <td>
-                <form action="/purchaseTickets" method = "POST">
+                <form action="purchaseTickets" method = "POST">
                     <input type="hidden" name="airline_name" value="{{ flight.airline_name }}"/>
                     <input type="hidden" name="flight_num" value="{{ flight.flight_num }}"/>
                     <input type="submit" value="Buy Ticket"/>
@@ -111,7 +111,7 @@
 
 
 
-<form action="/customer/trackMySpendingOptional" method="POST">
+<form action="trackMySpendingOptional" method="POST">
     <h3> Track My Spending </h3>
     <h3> Start - End</h3>
     <input type="date" name="start_date" placeholder="Start Date" /> 
