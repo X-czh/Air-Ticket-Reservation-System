@@ -96,6 +96,7 @@ def loginAuth():
 			# creates a session for the the user
 			session['username'] = username
 			session['usertype'] = usertype
+			# TODO store airline_name for airline staff, booking_agent_id for booking_agent
 			return redirect(url_for('{}.homepage'.format(usertype)))
 		else:
 			error = 'Incorrect password!'
