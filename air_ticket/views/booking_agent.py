@@ -41,30 +41,39 @@ def viewMyFlights():
 @requires_login_booking_agent
 def purchaseTickets():
 	# grabs information
-	booking_agent_email = session['username']
+	booking_agent_id = session['booking_agent_id']
 	customer_email = request.form['customer_email']
 	airline_name = request.form['airline_name']
 	flight_num = request.form['flight_num']
 
 	# cursor used to send queries
 	cursor = conn.cursor()
-	# get booking_agent_id
-	query = 'SELECT booking_agent_id FROM booking_agent WHERE email = %s'
-	cursor.execute(query, (booking_agent_email))
-	booking_agent_id = cursor.fetchone()
-	# generates ticket_id
-	query = 'SELECT COUNT(*) FROM ticket'
-	cursor.execute(query)
-	count = cursor.fetchone()
-	ticket_id = count + 1
-	# executes updates
-	ins_ticket = 'INSERT INTO ticket VALUES(%s, %s, %s)'
-	cursor.execute(ins_ticket, (ticket_id, airline_name, flight_num))
-	ins_purchases = 'INSERT INTO purchase VALUES(%s, %s, %s, CURDATE())'
-	cursor.execute(ins_purchases, (ticket_id, customer_email, booking_agent_id))
-	conn.commit()
+	
+	# check seat availability
+	query = '''
+		SELECT COUNT(*) as count, seats
+		FROM ticket NATURAL JOIN flight NATURAL JOIN airplane
+		WHERE airline_name = %s AND flight_num = %s '''
+	cursor.execute(query, (airline_name, flight_num))
+	data = cursor.fetchone()
+	if data['count'] < data['seats']:
+		msg = "Purchase successful!"
+		# generates ticket_id
+		query = 'SELECT COUNT(*) as count FROM ticket'
+		cursor.execute(query)
+		data = cursor.fetchone()
+		ticket_id = data['count'] + 1
+		# executes updates
+		ins_ticket = 'INSERT INTO ticket VALUES(%s, %s, %s)'
+		cursor.execute(ins_ticket, (ticket_id, airline_name, flight_num))
+		ins_purchases = 'INSERT INTO purchases VALUES(%s, %s, %s, CURDATE())'
+		cursor.execute(ins_purchases, (ticket_id, customer_email, booking_agent_id))
+		conn.commit()
+	else:
+		msg = 'All tickets have been sold out!'
+
 	cursor.close()
-	return render_template('booking_agent/index.html')	
+	return render_template('booking_agent/index.html', message=msg)	
 
 
 # Search for flights
@@ -92,27 +101,105 @@ def searchFlights():
 	return render_template('booking_agent/index.html', result=data)
 
 
+# View my commission - default
+@mod.route('/commssion_default', methods=['POST'])
+@requires_login_booking_agent
+def commission_default():
+	# grabs information
+	booking_agent_id = session['booking_agent_id']
+
+	# cursor used to send queries
+	cursor = conn.cursor()
+	# executes query
+	query = '''
+		SELECT 
+			SUM(price) * 0.1 as sum_commission, 
+			AVG(price) * 0.1 as avg_commission, 
+			COUNT(*) as num_tickets
+		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
+		WHERE booking_agent_id = %s AND 
+			purchase_date >= DATE_SUB(NOW(), INTERVAL 1 MONTH) '''
+	cursor.execute(query, (booking_agent_id))
+	# stores the results in a variable
+	data = cursor.fetchone()
+	cursor.close()
+	return render_template('booking_agent/index.html', result=data)
+
+
+# View my commission - option
+@mod.route('/commssion_option', methods=['POST'])
+@requires_login_booking_agent
+def commission_option():
+	# grabs information
+	booking_agent_id = session['booking_agent_id']
+	start_date = request.form['start_date']
+	end_date = request.form['start_date']
+
+	# check consistence of dates
+	if start_date > end_date:
+		error = 'Error: start date is earlier than end date!'
+		return render_template('general/index.html', message_upcoming=error)
+	
+	# cursor used to send queries
+	cursor = conn.cursor()
+	# executes query
+	query = '''
+		SELECT 
+			SUM(price) * 0.1 as sum_commission, 
+			AVG(price) * 0.1 as avg_commission, 
+			COUNT(*) as num_tickets
+		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
+		WHERE booking_agent_id = %s AND 
+			purchase_date BETWEEN %s AND %s '''
+	cursor.execute(query, (booking_agent_id, start_date, end_date))
+	# stores the results in a variable
+	data = cursor.fetchone()
+	cursor.close()
+	return render_template('booking_agent/index.html', result=data)
+
+
 # View top customers
 @mod.route('/viewTopCustomers', methods=['POST'])
 @requires_login_booking_agent
 def viewTopCustomers():
 	# grabs information
-	#booking_agent_id = session['booking_agent_id']
+	booking_agent_id = session['booking_agent_id']
 
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
 	query = ''' 
-		SELECT * 
-		FROM flight 
-		WHERE departure_airport = %s AND DATE(departure_time) = %s AND 
-			arrival_airport = %s 
-		ORDER BY departure_time '''
-	#cursor.execute(query, (departure_airport, departure_date, arrival_airport))
-	# stores the results in a variable
-	data = cursor.fetchall()
+		SELECT customer_email, COUNT(*) as count
+		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
+		WHERE booking_agent_id = %s AND 
+			purchase_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+		GROUP BY customer_email
+		ORDER BY count DESC 
+		LIMIT 5 '''
+	cursor.execute(query, (booking_agent_id))
+	top5_by_count = cursor.fetchall()
+	query = ''' 
+		SELECT customer_email, SUM(price) * 0.1 as commission
+		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
+		WHERE booking_agent_id = %s AND 
+			purchase_date >= DATE_SUB(NOW(), INTERVAL 1 YEAR)
+		GROUP BY customer_email
+		ORDER BY commission DESC 
+		LIMIT 5 '''
+	cursor.execute(query, (booking_agent_id))
+	top5_by_commission = cursor.fetchall()
 	cursor.close()
-	return render_template('booking_agent/index.html', result=data)
+
+	# check status
+	msg = None
+	if top5_by_commission != None:
+		msg = 'No records in the last year!'
+	elif top5_by_count != None:
+		msg = 'No records in the last 6 months!'
+	return render_template('booking_agent/index.html',	
+		top5_by_count=top5_by_count, 
+		top5_by_commission=top5_by_commission,
+		message_viewTopCustomers=msg)
 
 
 # Define route for logout

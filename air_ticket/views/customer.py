@@ -45,31 +45,32 @@ def purchaseTickets():
 
 	# cursor used to send queries
 	cursor = conn.cursor()
-
+	
 	# check seat availability
 	query = '''
 		SELECT COUNT(*) as count, seats
 		FROM ticket NATURAL JOIN flight NATURAL JOIN airplane
 		WHERE airline_name = %s AND flight_num = %s '''
-	cursor.execute(query)
+	cursor.execute(query, (airline_name, flight_num))
 	data = cursor.fetchone()
-	if data['count'] >= data['seats']:
+	if data['count'] < data['seats']:
+		msg = "Purchase successful!"
+		# generates ticket_id
+		query = 'SELECT COUNT(*) as count FROM ticket'
+		cursor.execute(query)
+		data = cursor.fetchone()
+		ticket_id = data['count'] + 1
+		# executes updates
+		ins_ticket = 'INSERT INTO ticket VALUES(%s, %s, %s)'
+		cursor.execute(ins_ticket, (ticket_id, airline_name, flight_num))
+		ins_purchases = 'INSERT INTO purchases VALUES(%s, %s, NULL, CURDATE())'
+		cursor.execute(ins_purchases, (ticket_id, customer_email))
+		conn.commit()
+	else:
 		msg = 'All tickets have been sold out!'
-		return render_template('customer/index.html', msg=msg)
 
-	# generates ticket_id
-	query = 'SELECT COUNT(*) as count FROM ticket'
-	cursor.execute(query)
-	data = cursor.fetchone()
-	ticket_id = data['count'] + 1
-	# executes updates
-	ins_ticket = 'INSERT INTO ticket VALUES(%s, %s, %s)'
-	cursor.execute(ins_ticket, (ticket_id, airline_name, flight_num))
-	ins_purchases = 'INSERT INTO purchases VALUES(%s, %s, NULL, CURDATE())'
-	cursor.execute(ins_purchases, (ticket_id, customer_email))
-	conn.commit()
 	cursor.close()
-	return render_template('customer/index.html')
+	return render_template('customer/index.html', message=msg)
 
 
 # Search for flights
