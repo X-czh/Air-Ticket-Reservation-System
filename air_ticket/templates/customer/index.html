@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Homepage</title>
+<title>Customer Menu</title>
 </head>
 <body>
-
+<h1>Welcome {{username}}!</h1>
 <form action="viewMyFlights" method="POST">
     <input type="submit" value="View My Upcoming Flights"/>
 </form>
-    
+
     {% if result %}
     <table>
         <th>Ticket ID</th>
@@ -41,7 +41,6 @@
             <td>{{ flight.purchase_date }}</td>
             <td>{{ flight.booking_agent_id}}</td>
             <td>{{ flight.customer_email}}</td>
-                </form>
         </tr>
         {% endfor %}
     
@@ -110,9 +109,64 @@
     {% endif %}
 
 
+<form action="trackmySpendingDefault" method="POST">
+    <h3>My Spending</h3>
+    <input type="submit" value="Show my Recent Spending">
+</form>
+
+{% if total and monthwise %}
+<script src='static/Chart.min.js'></script>
+<body>
+<h3>Total Spending: "{{ total }}"</h3>
+<canvas id="chart" width="600" height="400"></canvas>
+<script>
+    var labels = [];
+    {% for value in monthwise %}
+        labels.push({{ value.year }} + {{ value.month }});
+    {% endfor %}
+    
+    var data = [];
+    {% for value in monthwise %}
+        data.push({{ value.total }});
+    {% endfor %}
+
+    var barData = {
+        labels : labels,
+        datasets : [
+            {
+                fillColor: "rgba(151,187,205,0.2)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                data : data
+            }
+        ]
+    }
+ 
+   var mychart = document.getElementById("chart").getContext("2d");
+ 
+   steps = 10
+   max = 10
+   // draw bar chart
+   new Chart(mychart).Bar(barData, {
+        scaleOverride: true,
+        scaleSteps: steps,
+        scaleStepWidth: Math.ceil(max / steps),
+        scaleStartValue: 0,
+        scaleShowVerticalLines: true,
+        scaleShowGridLines : true,
+        barShowStroke : true,
+        scaleShowLabels: true
+   });
+
+{% endif %}
+ 
+</script>
+</body>
+
+
 
 <form action="trackMySpendingOptional" method="POST">
-    <h3> Track My Spending </h3>
+    <h3> Track My Spending by Time Period </h3>
     <h3> Start - End</h3>
     <input type="date" name="start_date" placeholder="Start Date" /> 
     <input type="date" name="end_date" palceholder="End Date" />
