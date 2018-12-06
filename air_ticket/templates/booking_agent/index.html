@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Booking Agent</title>
+<title>Booking Agent Menu</title>
 </head>
 <body>
 
@@ -109,6 +109,41 @@
     <p class="error"><strong>Error:</strong>{{error}}</p>
     {% endif %}
 
+<form action="/commission_default" method="POST">
+    <input type="submit" value="View My Commissions"/>
+</form>
+    {% if result %}
+        {% for value in result %}
+        <h3> Your total commission: {{ value.tot_commission }}</h3>
+        <h3> Your average commission: {{ value.avg_commission }}</h3>
+        <h3> Number of tickets sold: {{ value.num_tickets }}</h3>
+        {% endfor %}
+    {% endif %}
+
+    {% if error %}
+    <p class="error"><strong>Error:</strong>{{error}}</p>
+    {% endif %}
+
+    
+    
+    
+<form action="/commission_optional" method="POST">
+    <input type="date" name="start_date" placeholder="Start Date" /> 
+    <input type="date" name="end_date" placeholder="End Date" />
+    <input type="submit" value="Search"/>
+</form>
+    {% if result %}
+        {% for value in result %}
+        <h3> Your total commission: {{ value.tot_commission }}</h3>
+        <h3> Your average commission: {{ value.avg_commission }}</h3>
+        <h3> Number of tickets sold: {{ value.num_tickets }}</h3>
+        {% endfor %}
+    {% endif %}
+    {% if error %}
+    <p class="error"><strong>Error:</strong>{{error}}</p>
+    {% endif %}
+
+    
 
 
 
