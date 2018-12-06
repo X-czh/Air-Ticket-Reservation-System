@@ -93,4 +93,5 @@ def searchFlights():
 def logout():
 	session.pop('username')
 	session.pop('usertype')
+	session.pop('booking_agent_id')
 	return redirect('/')

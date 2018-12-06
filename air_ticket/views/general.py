@@ -5,6 +5,7 @@ from air_ticket import conn
 
 mod = Blueprint('general', __name__)
 
+
 # Define route for homepage
 @mod.route('/')
 def hoempage():

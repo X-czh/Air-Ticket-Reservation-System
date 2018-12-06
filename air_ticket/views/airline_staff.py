@@ -280,5 +280,5 @@ def viewTop3Destinations():
 def logout():
 	session.pop('username')
 	session.pop('usertype')
-	session.pop('airline_name') #TODO
+	session.pop('airline_name')
 	return redirect('/')
