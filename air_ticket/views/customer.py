@@ -122,13 +122,13 @@ def trackMySpendingOptional():
 	query = '''
 		SELECT SUM(price) as total
 		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
-		WHERE customer_email = %s AND purchase_date BETWEEN(%s, %s) '''
+		WHERE customer_email = %s AND purchase_date BETWEEN %s AND %s '''
 	cursor.execute(query, (customer_email, start_date, end_date))
 	total = cursor.fetchone()
 	query = ''' 
 		SELECT YEAR(departure_time) as year, MONTH(departure_time) as month, SUM(price) as total
 		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
-		WHERE customer_email = %s AND purchase_date BETWEEN(%s, %s)
+		WHERE customer_email = %s AND purchase_date BETWEEN %s AND %s
 		GROUP BY year, month 
 		ORDER BY year DESC, month DESC '''
 	cursor.execute(query, (customer_email, start_date, end_date))

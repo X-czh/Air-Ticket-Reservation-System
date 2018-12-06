@@ -187,7 +187,7 @@ def viewReports():
 			purchase_date BETWEEN %s AND %s
 		GROUP BY year, month 
 		ORDER BY year DESC, month DESC '''
-	cursor.execute(query, (airline_name))
+	cursor.execute(query, (airline_name, start_date, end_date))
 	result = cursor.fetchall()
 	return render_template('airline_staff/index.html', result=result)
 
