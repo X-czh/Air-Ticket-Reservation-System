@@ -26,50 +26,68 @@ def register():
 # Check upcoming flights
 @mod.route('/upcoming', methods=['POST'])
 def checkUpcoming():
-	#TODO
 	# grabs information from the forms
 	departure_airport = request.form['departure_airport']
 	departure_date = request.form['departure_date']
 	arrival_airport = request.form['arrival_airport']
 	arrival_date = request.form['arrival_date']
 
+	# check consistence of dates
+	if departure_date > arrival_date:
+		error = 'Error: arrival date is earlier than departure date!'
+		return render_template('general/index.html', message_upcoming=error)
+ 
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
-	query = 'SELECT * FROM flight WHERE departure_airport = %s AND DATE(departure_time) = %s AND \
-		arrival_airport = %s AND DATE(arrival_time) = %s'
-	print(query)
+	query = '''
+		SELECT * 
+		FROM flight 
+		WHERE departure_airport = %s AND DATE(departure_time) = %s AND 
+			arrival_airport = %s AND DATE(arrival_time) = %s '''
 	cursor.execute(query, (departure_airport, departure_date, arrival_airport, arrival_date))
 	# stores the results in a variable
 	data = cursor.fetchall()
-	error = None
+
+	# check data
 	if data:
-		return render_template('general/index.html', result = data)
+		return render_template('general/index.html', result_upcoming=data)
 	else:
-		return render_template('general/index.html', error = error) 
+		msg = 'No records are found!'
+		return render_template('general/index.html', message_upcoming=msg)
 
 
 @mod.route('/status', methods=['POST'])
 def checkStatus():
-	#TODO
 	# grabs information from the forms
 	flight_num = request.form['flight_num']
 	departure_date = request.form['departure_date']
 	arrival_date = request.form['arrival_date']
 
+	# check consistence of dates
+	if departure_date > arrival_date:
+		error = 'Error: arrival date is earlier than departure date!'
+		return render_template('general/index.html', message_status=error)
+
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
-	query = 'SELECT status FROM flight WHERE flight_num = %s AND \
-		DATE(departure_time) = %s AND DATE(arrival_time) = %s'
+	query = ''' 
+		SELECT * 
+		FROM flight
+		WHERE flight_num = %s AND DATE(departure_time) = %s AND DATE(arrival_time) = %s 
+		ORDER BY airline_name, flight_num '''
+	print(query)
 	cursor.execute(query, (flight_num, departure_date, arrival_date))
 	# stores the results in a variable
-	data = cursor.one()
-	error = None
+	data = cursor.fetchall()
+
+	# check data
 	if data:
-		# if the previous query returns data, then user exists
-		error = 'This user already exists'
-		return render_template('general/register.html', error = error)
+		return render_template('general/index.html', result_status=data)
+	else:
+		msg = 'No records are found!'
+		return render_template('general/index.html', message_status=msg)
 
 
 # Authenticates the login
@@ -108,6 +126,7 @@ def loginAuth():
 	else:
 		error = 'User does not exist!'
 	return render_template('general/login.html', error=error)
+
 
 # Authenticates the register
 @mod.route('/registerAuth', methods=['POST'])
