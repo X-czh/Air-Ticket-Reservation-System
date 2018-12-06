@@ -4,11 +4,13 @@ from air_ticket.utils import requires_login_booking_agent
 
 mod = Blueprint('booking_agent', __name__, url_prefix='/booking_agent')
 
+
 # Define route for homepage
 @mod.route('/')
 @requires_login_booking_agent
 def homepage():
 	return render_template('booking_agent/index.html')
+
 
 # View my flights
 @mod.route('/viewMyFlights', methods=['POST'])
@@ -32,6 +34,7 @@ def viewMyFlights():
 	data = cursor.fetchall()
 	cursor.close()
 	return render_template('booking_agent/index.html', result=data)
+
 
 # Purchase tickets
 @mod.route('/purchaseTickets', methods=['POST'])
@@ -63,6 +66,7 @@ def purchaseTickets():
 	cursor.close()
 	return render_template('booking_agent/index.html')	
 
+
 # Search for flights
 @mod.route('/searchFlighs', methods=['POST'])
 @requires_login_booking_agent
@@ -86,6 +90,30 @@ def searchFlights():
 	data = cursor.fetchall()
 	cursor.close()
 	return render_template('booking_agent/index.html', result=data)
+
+
+# View top customers
+@mod.route('/viewTopCustomers', methods=['POST'])
+@requires_login_booking_agent
+def viewTopCustomers():
+	# grabs information
+	#booking_agent_id = session['booking_agent_id']
+
+	# cursor used to send queries
+	cursor = conn.cursor()
+	# executes query
+	query = ''' 
+		SELECT * 
+		FROM flight 
+		WHERE departure_airport = %s AND DATE(departure_time) = %s AND 
+			arrival_airport = %s 
+		ORDER BY departure_time '''
+	#cursor.execute(query, (departure_airport, departure_date, arrival_airport))
+	# stores the results in a variable
+	data = cursor.fetchall()
+	cursor.close()
+	return render_template('booking_agent/index.html', result=data)
+
 
 # Define route for logout
 @mod.route('/logout')

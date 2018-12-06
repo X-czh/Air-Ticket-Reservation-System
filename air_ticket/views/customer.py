@@ -4,11 +4,13 @@ from air_ticket.utils import requires_login_customer
 
 mod = Blueprint('customer', __name__, url_prefix='/customer')
 
+
 # Define route for homepage
 @mod.route('/')
 @requires_login_customer
 def homepage():
 	return render_template('customer/index.html')
+
 
 # View my flights
 @mod.route('/viewMyFlights', methods=['POST'])
@@ -31,6 +33,7 @@ def viewMyFlights():
 	cursor.close()
 	return render_template('customer/index.html', result=data)
 
+
 # Purchase tickets
 @mod.route('/purchaseTickets', methods=['POST'])
 @requires_login_customer
@@ -42,6 +45,18 @@ def purchaseTickets():
 
 	# cursor used to send queries
 	cursor = conn.cursor()
+
+	# check seat availability
+	query = '''
+		SELECT COUNT(*) as count, seats
+		FROM ticket NATURAL JOIN flight NATURAL JOIN airplane
+		WHERE airline_name = %s AND flight_num = %s '''
+	cursor.execute(query)
+	data = cursor.fetchone()
+	if data['count'] >= data['seats']:
+		msg = 'All tickets have been sold out!'
+		return render_template('customer/index.html', msg=msg)
+
 	# generates ticket_id
 	query = 'SELECT COUNT(*) as count FROM ticket'
 	cursor.execute(query)
@@ -55,6 +70,7 @@ def purchaseTickets():
 	conn.commit()
 	cursor.close()
 	return render_template('customer/index.html')
+
 
 # Search for flights
 @mod.route('/searchFlights', methods=['POST'])
@@ -79,6 +95,7 @@ def searchFlights():
 	data = cursor.fetchall()
 	cursor.close()
 	return render_template('customer/index.html', result=data)
+
 
 # Track my spending default view
 @mod.route('/trackMySpendingDefault', methods=['POST'])
@@ -106,6 +123,7 @@ def trackMySpendingDefault():
 	monthwise = cursor.fetchall()
 	cursor.close()
 	return render_template('customer/index.html', total=total, monthwise=monthwise)
+
 
 # Track my spending optional view
 @mod.route('/trackMySpendingOptional', methods=['POST'])
@@ -135,6 +153,7 @@ def trackMySpendingOptional():
 	monthwise = cursor.fetchall()
 	cursor.close()
 	return render_template('customer/index.html', total=total, monthwise=monthwise)
+
 
 # Define route for logout
 @mod.route('/logout')

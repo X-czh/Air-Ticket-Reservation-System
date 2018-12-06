@@ -5,6 +5,7 @@ from air_ticket.utils import requires_login_airline_staff
 
 mod = Blueprint('airline_staff', __name__, url_prefix='/airline_staff')
 
+
 # Define route for homepage
 @mod.route('/')
 @requires_login_airline_staff
