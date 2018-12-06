@@ -1,10 +1,11 @@
 <html>
-<head>
-</head>
+<head>Main Menu</head>
 <body>
+<input type="button" onclick="location.href='/login';" value=Login />
+<input type="button" onclick="location.href='/register';" value=Register />
 
 <form action="/upcoming" method="POST">
-	<h1>Welcome {{username}}</h1>
+	<h1>Welcome {{username}}!</h1>
     <input type="text" name="arrival_date" placeholder="Enter Arrival Date" /> 
     <input type="text" name="departure_date" placeholder="Enter Departure Date" /> 
     <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport"/>
