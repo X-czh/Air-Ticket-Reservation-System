@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, redirect, url_for, request, session 
+from flask import Blueprint, render_template, redirect, url_for, request, session
+from pymysql import MySQLError
 from passlib.hash import pbkdf2_sha256
 from air_ticket import conn
 
@@ -96,20 +97,27 @@ def loginAuth():
 			# creates a session for the the user
 			session['username'] = username
 			session['usertype'] = usertype
-			# TODO store airline_name for airline staff, booking_agent_id for booking_agent
+			# store booking_agent_id for booking_agent, airline_name for airline staff
+			if usertype == 'booking_agent':
+				session['booking_agent_id'] = data['booking_agent_id']
+			elif usertype == 'airline_staff':
+				session['airline_name'] = data['airline_name']
 			return redirect(url_for('{}.homepage'.format(usertype)))
 		else:
 			error = 'Incorrect password!'
 	else:
 		error = 'User does not exist!'
-	return redirect(url_for('general.login', error=error))
-
+	return render_template('general/login.html', error=error)
 
 # Authenticates the register
 @mod.route('/registerAuth', methods=['POST'])
 def registerAuth():
 	# grabs usertype
 	usertype = request.form['usertype']
+
+	# cursor used to send queries
+	cursor = conn.cursor()
+	error = None
 	
 	# if usertype is customer
 	if usertype == 'customer':
@@ -127,8 +135,6 @@ def registerAuth():
 		passport_country = request.form['passport_country']
 		date_of_birth = request.form['date_of_birth']
 
-		# cursor used to send queries
-		cursor = conn.cursor()
 		# executes query
 		query = 'SELECT * FROM customer WHERE email = %s'
 		cursor.execute(query, (email))
@@ -137,23 +143,23 @@ def registerAuth():
 
 		# authenticates the register information
 		if data:
-			cursor.close()
 			# if the previous query returns data, then user exists
 			error = 'User alread exists!'
-			return redirect(url_for('general.register', error=error))
 		else:
 			# generates the hash value of the password
 			password_hash = pbkdf2_sha256.hash(password)
 			# inserts into the database
-			ins = ('INSERT INTO customer ' 
-				'VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)')
-			cursor.execute(ins, (email, name, password_hash,  
-				building_number, street, city, state, phone_number, 
-				passport_number, passport_expiration, passport_country, 
-				date_of_birth))
-			conn.commit()
-			cursor.close()
-			return redirect(url_for('customer.homepage'))
+			try:
+				ins = '''
+					INSERT INTO customer 
+						VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) '''
+				cursor.execute(ins, (email, name, password_hash,  
+					building_number, street, city, state, phone_number, 
+					passport_number, passport_expiration, passport_country, 
+					date_of_birth))
+				conn.commit()
+			except MySQLError as e:
+				error = 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
 	# if usertype is booking_agent
 	elif usertype == 'booking_agent':
@@ -162,8 +168,6 @@ def registerAuth():
 		password = request.form['password']
 		booking_agent_id = request.form['booking_agent_id']
 
-		# cursor used to send queries
-		cursor = conn.cursor()
 		# executes query
 		query = 'SELECT * FROM booking_agent WHERE email = %s'
 		cursor.execute(query, (email))
@@ -172,19 +176,18 @@ def registerAuth():
 
 		# authenticates the register information
 		if data:
-			cursor.close()
 			# if the previous query returns data, then user exists
 			error = 'User already exists!'
-			return redirect(url_for('general.register', error=error))
 		else:
 			# generates the hash value of the password
 			password_hash = pbkdf2_sha256.hash(password)
 			# inserts into the database
-			ins = 'INSERT INTO booking_agent VALUES(%s, %s, %s)'
-			cursor.execute(ins, (email, password_hash, booking_agent_id))
-			conn.commit()
-			cursor.close()
-			return redirect(url_for('booking_agent.homepage'))
+			try:
+				ins = 'INSERT INTO booking_agent VALUES(%s, %s, %s)'
+				cursor.execute(ins, (email, password_hash, booking_agent_id))
+				conn.commit()
+			except MySQLError as e:
+				error = 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
 	# if usertype is airline staff
 	else:
@@ -196,8 +199,6 @@ def registerAuth():
 		date_of_birth = request.form['date_of_birth']
 		airline_name = request.form['airline_name']
 
-		# cursor used to send queries
-		cursor = conn.cursor()
 		# executes query
 		query = 'SELECT * FROM airline_staff WHERE username = %s'
 		cursor.execute(query, (username))
@@ -206,17 +207,25 @@ def registerAuth():
 
 		# authenticates the register information
 		if data:
-			cursor.close()
 			# if the previous query returns data, then user exists
 			error = 'User already exists!'
-			return redirect(url_for('general.register', error=error))
 		else:
 			# generates the hash value of the password
 			password_hash = pbkdf2_sha256.hash(password)
 			# inserts into the database
-			ins = 'INSERT INTO airline_staff VALUES(%s, %s, %s, %s, %s, %s)'
-			cursor.execute(ins, (username, password_hash, 
-				first_name, last_name, date_of_birth, airline_name))
-			conn.commit()
-			cursor.close()
-			return redirect(url_for('airline_staff.homepage'))
+			try:
+				ins = 'INSERT INTO airline_staff VALUES(%s, %s, %s, %s, %s, %s)'
+				cursor.execute(ins, (username, password_hash, 
+					first_name, last_name, date_of_birth, airline_name))
+				conn.commit()
+			except MySQLError as e:
+				error = 'Got error {!r}, errno is {}'.format(e, e.args[0])
+		
+	# close the cursor
+	cursor.close()
+
+	# check register status and redirect url
+	if error:
+		return render_template('general/register.html', error=error)
+	else:
+		return redirect(url_for('general.login'))
