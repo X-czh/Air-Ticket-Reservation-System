@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Booking Agent: Update</title>
+</head>
+<body>
+<form action="changeflightstatus" method="POST">
+    <h3>Change Flight Status</h3>
+    <input type="text" name="flight_num" placeholder="Enter Flight Number" /> 
+    <input type="text" name="status" placeholder="Enter New Flight Status " /> 
+    <input type="submit" value="Update"/>
+</form>
+    
+                    
+    {% if result %}
+    alert("{{ result }}");
+    {% endif %}
+
+    {% if error %}
+    <p class="error"><strong>Error:</strong>{{error}}</p>
+    {% endif %}
+
+<form action="addNewAirplane" method="POST">
+    <h3>Add New Airplane</h3>
+    <input type="text" name="flight_num" placeholder="Enter Flight Number" /> 
+    <input type="text" name="status" placeholder="Enter New Flight Status " /> 
+    <input type="submit" value="Update"/>
+  
+</form>
+
+
+    {% if result %}
+    alert("{{ result }}");
+    {% endif %}
+
+    {% if error %}
+    <p class="error"><strong>Error:</strong>{{error}}</p>
+    {% endif %}
+
+
+
+<a href="/index">back</a>
+</body>
+
+</html>
