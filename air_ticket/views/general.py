@@ -49,6 +49,7 @@ def checkUpcoming():
 	cursor.execute(query, (departure_airport, departure_date, arrival_airport, arrival_date))
 	# stores the results in a variable
 	data = cursor.fetchall()
+	cursor.close()
 
 	# check data
 	if data:
@@ -78,10 +79,10 @@ def checkStatus():
 		FROM flight
 		WHERE flight_num = %s AND DATE(departure_time) = %s AND DATE(arrival_time) = %s 
 		ORDER BY airline_name, flight_num '''
-	print(query)
 	cursor.execute(query, (flight_num, departure_date, arrival_date))
 	# stores the results in a variable
 	data = cursor.fetchall()
+	cursor.close()
 
 	# check data
 	if data:

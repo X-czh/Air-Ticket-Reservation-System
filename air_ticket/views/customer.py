@@ -31,7 +31,7 @@ def viewMyFlights():
 	# stores the results in a variable
 	data = cursor.fetchall()
 	cursor.close()
-	return render_template('customer/index.html', result=data)
+	return render_template('customer/index.html', result_viewMyFlights=data)
 
 
 # Purchase tickets
@@ -70,7 +70,7 @@ def purchaseTickets():
 		msg = 'All tickets have been sold out!'
 
 	cursor.close()
-	return render_template('customer/index.html', message=msg)
+	return render_template('customer/index.html', message_purchaseTickets=msg)
 
 
 # Search for flights
@@ -81,21 +81,33 @@ def searchFlights():
 	departure_airport = request.form['departure_airport']
 	departure_date = request.form['departure_date']
 	arrival_airport = request.form['arrival_airport']
+	arrival_date = request.form['arrival_date']
 
+	# check consistence of dates
+	if departure_date > arrival_date:
+		error = 'Error: arrival date is earlier than departure date!'
+		return render_template('general/index.html', message_upcoming=error)
+	
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
-	query = ''' 
+	# TODO
+	query = '''
 		SELECT * 
-		FROM flight 
+		FROM flight NATURAL JOIN ticket NATURAL JOIN purchases
 		WHERE departure_airport = %s AND DATE(departure_time) = %s AND 
-			arrival_airport = %s 
-		ORDER BY departure_time '''
-	cursor.execute(query, (departure_airport, departure_date, arrival_airport))
+			arrival_airport = %s AND DATE(arrival_time) = %s '''
+	cursor.execute(query, (departure_airport, departure_date, arrival_airport, arrival_date))
 	# stores the results in a variable
 	data = cursor.fetchall()
 	cursor.close()
-	return render_template('customer/index.html', result=data)
+
+	# check data
+	if data:
+		return render_template('customer/index.html', result_searchFlights=data)
+	else:
+		msg = 'No records are found!'
+		return render_template('customer/index.html', message_searchFlights=msg)
 
 
 # Track my spending default view
@@ -122,6 +134,7 @@ def trackMySpendingDefault():
 		ORDER BY year DESC, month DESC '''
 	cursor.execute(query, (customer_email))
 	monthwise = cursor.fetchall()
+	print(monthwise)
 	cursor.close()
 	return render_template('customer/index.html', total=total, monthwise=monthwise)
 
