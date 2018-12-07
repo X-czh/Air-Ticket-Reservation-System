@@ -9,7 +9,7 @@
     <input type="submit" value="View My Upcoming Flights"/>
 </form>
 
-    {% if result %}
+    {% if result_viewMyFlights %}
     <table>
         <th>Ticket ID</th>
         <th>Airline Name</th>
@@ -26,7 +26,7 @@
         <th>Customer Email</th>
     
     
-        {% for flight in result %}
+        {% for flight in result_viewMyFlights %}
         <tr>
             <td>{{ flight.ticket_id }}</td>
             <td>{{ flight.airline_name }}</td>
@@ -61,7 +61,7 @@
     <input type="submit" value="Search"/>
 </form>
     
-    {% if result %}
+    {% if result_searchFlights %}
     <table>
         <th>Ticket ID</th>
         <th>Airline Name</th>
@@ -75,7 +75,7 @@
         <th>Status</th>
 
     
-        {% for flight in result %}
+        {% for flight in result_searchFlights %}
         <tr>
             <td>{{ flight.ticket_id }}</td>
             <td>{{ flight.airline_name }}</td>
@@ -91,13 +91,13 @@
                 <form action="purchaseTickets" method = "POST">
                     <input type="hidden" name="airline_name" value="{{ flight.airline_name }}"/>
                     <input type="hidden" name="flight_num" value="{{ flight.flight_num }}"/>
+                    <br />
                     <input type="submit" value="Buy Ticket"/>
-                    
-                    {% if result %}
-                    alert("{{ result }}");
+                </form>
+                    {% if result_purchaseTickets %}
+                    <script>alert("{{ result_purchaseTickets }}");</script>
                     {% endif %}
 
-                </form>
         </tr>
         {% endfor %}
     
@@ -157,11 +157,10 @@
         barShowStroke : true,
         scaleShowLabels: true
    });
-
-{% endif %}
- 
 </script>
 </body>
+{% endif %}
+ 
 
 
 
