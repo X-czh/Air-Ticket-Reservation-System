@@ -4,7 +4,7 @@
 <title>Booking Agent: Update</title>
 </head>
 <body>
-<form action="changeflightstatus" method="POST">
+<form action="changeFlightStatus" method="POST">
     <h3>Change Flight Status</h3>
     <input type="text" name="flight_num" placeholder="Enter Flight Number" /> 
     <input type="text" name="status" placeholder="Enter New Flight Status " /> 
@@ -12,8 +12,8 @@
 </form>
     
                     
-    {% if result %}
-    alert("{{ result }}");
+    {% if result_changeFlightStatus %}
+    <script>alert("{{ result_changeFlightStatus }}");</script>
     {% endif %}
 
     {% if error %}
@@ -29,14 +29,34 @@
 </form>
 
 
-    {% if result %}
-    alert("{{ result }}");
+    {% if result_addNewAirplane %}
+    <script>alert("{{ result_addNewAirplane }}");</script>
     {% endif %}
 
     {% if error %}
     <p class="error"><strong>Error:</strong>{{error}}</p>
     {% endif %}
 
+
+
+<form action="addNewAirport" method="POST">
+        <h3>Add New Airplane</h3>
+        <input type="text" name="flight_num" placeholder="Enter Flight Number" /> 
+        <input type="text" name="status" placeholder="Enter New Flight Status " /> 
+        <input type="submit" value="Update"/>
+      
+    </form>
+    
+    
+        {% if result_addNewAirport %}
+        <script>alert("{{ result_addNewAirport }}");</script>
+        {% endif %}
+    
+        {% if error %}
+        <p class="error"><strong>Error:</strong>{{error}}</p>
+        {% endif %}
+    
+    
 
 
 <a href="/index">back</a>

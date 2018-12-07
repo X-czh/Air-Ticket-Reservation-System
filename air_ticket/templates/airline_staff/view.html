@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Booking Agent: View</title>
+</head>
+<body>
+<form action="viewTop5BookingAgent" method="POST">
+    <input type="submit" value="View Top5 Booking Agents"/>
+</form><br />
+
+{% if top5bycount_past_month and top5bycount_past_year and top5bycommission_past_year %} 
+<h3>Top 5 Booking Agent in the past Month(by No. of tickets): </h3><br />
+<h3>{{top5bycount_past_month}}</h3><br />
+<h3>Top 5 Booking Agent in thepast year(by No. of tickets): </h3><br />
+<h3>{{top5bycount_past_year}}</h3><br />
+<h3>Top 5 Booking Agent in the past year(by commission): </h3><br />
+<h3>{{top5bycommission_past_year}}</h3><br />
+{% end if %}
+
+
+
+<form action="viewFrequentCustomers" method="POST">
+        <input type="submit" value="View Frequent Customers"/>
+    </form><br />
+    
+    {% if result_viewFrequentCustomers %} 
+    <h3>Most Frequent Customer in the airline in the past: </h3><br />
+    <h3>{{result_viewFrequentCustomers}}</h3><br />
+    {% end if %}
+
+
+
+<form action="viewTop3Destitnations" method="POST">
+        <input type="submit" value="View Top 3 Destinations"/>
+</form><br />
+
+{% if top3_past3month and top3_past1year %} 
+    <h3>Top 3 Destinations in the past 3 months: </h3><br />
+    <h3>{{top3_past3month}</h3><br />
+    <h3>Top 3 Destinations in the past year: </h3><br />
+    <h3>{{top3_past1year}}</h3><br />
+{% end if %}
+
+
+
+<form action="viewReports" method="POST">
+    <input type="date" name="start_date" placeholder="Start Date" /> 
+    <input type="date" name="end_date" placeholder="End Date" /><br />
+    <input type="submit" value="View reports of tickets sold"/>
+</form><br />
+    
+{% if result_viewReports %}
+    <script src='static/Chart.min.js'></script>
+    <body>
+    <h3>MonthWise Tickets Sold</h3>
+    <canvas id="chart" width="600" height="400"></canvas>
+    <script>
+    var labels = [];
+    {% for value in result_viewReports %}
+        labels.push({{value.month}});
+    {% endfor %}
+    
+    var data = [];
+    {% for value in result_viewReports %}
+        data.push({{value.total}});
+    {% endfor %}
+
+    var barData = {
+        labels : labels,
+        datasets : [
+            {
+                fillColor: "rgba(151,187,205,0.2)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                data : data
+            }
+        ]
+    }
+ 
+   var mychart = document.getElementById("chart").getContext("2d");
+ 
+   steps = 10
+   max = 10
+   new Chart(mychart).Bar(barData, {
+        scaleOverride: true,
+        scaleSteps: steps,
+        scaleStepWidth: Math.ceil(max / steps),
+        scaleStartValue: 0,
+        scaleShowVerticalLines: true,
+        scaleShowGridLines : true,
+        barShowStroke : true,
+        scaleShowLabels: true
+   });
+
+ 
+    </script>
+    </body>
+{% endif %}
+
+<form action="viewTop5BookingAgent" method="POST">
+    <input type="submit" value="View Top5 Booking Agents"/>
+</form><br />
+
+{% if message %}
+<script>alert("{{message}}")</script>
+{% endif %}    
+    
+
+
+<a href="/index">back</a>
+</body>
+
+</html>
