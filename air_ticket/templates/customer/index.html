@@ -9,18 +9,16 @@
 <h1>Welcome, Customer!</h1>
 
 
-<h3>View My Flights</h3>
+<h3>View My Upcoming Flights</h3>
 
 <form action="viewMyFlights" method="POST">
     <input type="submit" value="View My Upcoming Flights"/>
 </form>
 
-<br> Advanced search for View My Flights <br>
+<br> View My Flights by specifying a range of departure date <br>
 <form action="viewMyFlightsOption" method="POST">
-    <input type="date" name="departure_date" placeholder="Enter Departure Date" required/> 
-    <input type="date" name="arrival_date" placeholder="Enter Arrival Date" required/> 
-    <input type="text" name="departure_airport" placeholder="Enter Departure Airport" required/>
-    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport" required/>
+    <input type="text" name="start_date" placeholder="Enter Start Date" required/> 
+    <input type="text" name="end_date" placeholder="Enter End Date" required/>
     <input type="submit" value="View My Flights"/>
 </form>
 
@@ -67,8 +65,8 @@
 <h3>Search For Flights</h3>
 
 <form action="searchFlights" method="POST">
-    <input type="date" name="departure_date" placeholder="Enter Departure Date" required/> 
-    <input type="date" name="arrival_date" placeholder="Enter Arrival Date" required/> 
+    <input type="text" name="departure_date" placeholder="Enter Departure Date" required/> 
+    <input type="text" name="arrival_date" placeholder="Enter Arrival Date" required/> 
     <input type="text" name="departure_airport" placeholder="Enter Departure Airport" required/>
     <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport" required/>
 	<input type="submit" value="Search"/>
@@ -261,7 +259,7 @@ var myChart = new Chart(ctx, {
 </style>
     
 
-<a href="/logout">Logout</a>
+<a href="/customer/logout">Logout</a>
 </body>
 
 </html>

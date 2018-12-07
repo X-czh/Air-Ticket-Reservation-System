@@ -46,15 +46,13 @@ def viewMyFlights():
 def viewMyFlightsOption():
 	# grabs information
 	booking_agent_email = session['username']
-	departure_airport = request.form['departure_airport']
-	departure_date = request.form['departure_date']
-	arrival_airport = request.form['arrival_airport']
-	arrival_date = request.form['arrival_date']
+	start_date = request.form['start_date']
+	end_date = request.form['end_date']
 	
 	# check consistence of dates
-	if departure_date > arrival_date:
-		error = 'Error: arrival date is earlier than departure date!'
-		return render_template('booking_agent/index.html', message_viewMyFlights=error)
+	if start_date > end_date:
+		error = 'Error: end date is earlier than start date!'
+		return render_template('customer/index.html', message_viewMyFlights=error)
 
 	# cursor used to send queries
 	cursor = conn.cursor()
@@ -62,11 +60,8 @@ def viewMyFlightsOption():
 	query = '''
 		SELECT *
 		FROM booking_agent NATURAL JOIN purchases NATURAL JOIN ticket NATURAL JOIN flight
-		WHERE email = %s AND departure_airport = %s AND 
-			DATE(departure_time) = %s AND arrival_airport = %s AND 
-			DATE(arrival_time) = %s '''
-	cursor.execute(query, (booking_agent_email, departure_airport, departure_date, 
-		arrival_airport, arrival_date))
+		WHERE email = %s AND AND DATE(departure_time) BETWEEN %s AND %s '''
+	cursor.execute(query, (booking_agent_email, start_date, end_date))
 	# stores the results in a variable
 	data = cursor.fetchall()
 	cursor.close()
