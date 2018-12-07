@@ -23,9 +23,7 @@ def viewMyFlights():
 	cursor = conn.cursor()
 	# executes query
 	query = '''
-		SELECT ticket_id, customer_email, airline_name, flight_num, airplane_id, 
-			departure_airport, departure_time, arrival_airport, arrival_time, 
-			status, price, purchase_date
+		SELECT *
 		FROM booking_agent NATURAL JOIN purchases NATURAL JOIN ticket NATURAL JOIN flight
 		WHERE email = %s AND departure_time > NOW()
 		ORDER BY departure_time '''
@@ -33,7 +31,52 @@ def viewMyFlights():
 	# stores the results in a variable
 	data = cursor.fetchall()
 	cursor.close()
-	return render_template('booking_agent/index.html', result=data)
+
+	# check data
+	if data:
+		return render_template('booking_agent/index.html', result_viewMyFlights=data)
+	else:
+		msg = 'No records are found!'
+		return render_template('booking_agent/index.html', message_viewMyFlights=msg)
+
+
+# View my flights option
+@mod.route('/viewMyFlightsOption', methods=['POST'])
+@requires_login_booking_agent
+def viewMyFlightsOption():
+	# grabs information
+	booking_agent_email = session['username']
+	departure_airport = request.form['departure_airport']
+	departure_date = request.form['departure_date']
+	arrival_airport = request.form['arrival_airport']
+	arrival_date = request.form['arrival_date']
+	
+	# check consistence of dates
+	if departure_date > arrival_date:
+		error = 'Error: arrival date is earlier than departure date!'
+		return render_template('booking_agent/index.html', message_viewMyFlights=error)
+
+	# cursor used to send queries
+	cursor = conn.cursor()
+	# executes query
+	query = '''
+		SELECT *
+		FROM booking_agent NATURAL JOIN purchases NATURAL JOIN ticket NATURAL JOIN flight
+		WHERE email = %s AND departure_airport = %s AND 
+			DATE(departure_time) = %s AND arrival_airport = %s AND 
+			DATE(arrival_time) = %s '''
+	cursor.execute(query, (booking_agent_email, departure_airport, departure_date, 
+		arrival_airport, arrival_date))
+	# stores the results in a variable
+	data = cursor.fetchall()
+	cursor.close()
+
+	# check data
+	if data:
+		return render_template('booking_agent/index.html', result_viewMyFlights=data)
+	else:
+		msg = 'No records are found!'
+		return render_template('booking_agent/index.html', message_viewMyFlights=msg)
 
 
 # Purchase tickets
@@ -53,7 +96,8 @@ def purchaseTickets():
 	query = '''
 		SELECT COUNT(*) as count, seats
 		FROM ticket NATURAL JOIN flight NATURAL JOIN airplane
-		WHERE airline_name = %s AND flight_num = %s '''
+		WHERE airline_name = %s AND flight_num = %s
+		GROUP BY airline_name, flight_num '''
 	cursor.execute(query, (airline_name, flight_num))
 	data = cursor.fetchone()
 	if data['count'] < data['seats']:
@@ -77,28 +121,39 @@ def purchaseTickets():
 
 
 # Search for flights
-@mod.route('/searchFlighs', methods=['POST'])
+@mod.route('/searchFlights', methods=['POST'])
 @requires_login_booking_agent
 def searchFlights():
 	# grabs information
 	departure_airport = request.form['departure_airport']
 	departure_date = request.form['departure_date']
 	arrival_airport = request.form['arrival_airport']
+	arrival_date = request.form['arrival_date']
+
+	# check consistence of dates
+	if departure_date > arrival_date:
+		error = 'Error: arrival date is earlier than departure date!'
+		return render_template('booking_agent/index.html', message_searchFlights=error)
 
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
-	query = ''' 
+	query = '''
 		SELECT * 
 		FROM flight 
 		WHERE departure_airport = %s AND DATE(departure_time) = %s AND 
-			arrival_airport = %s 
-		ORDER BY departure_time '''
+			arrival_airport = %s AND DATE(arrival_time) = %s '''
 	cursor.execute(query, (departure_airport, departure_date, arrival_airport))
 	# stores the results in a variable
 	data = cursor.fetchall()
 	cursor.close()
-	return render_template('booking_agent/index.html', result=data)
+	
+	# check data
+	if data:
+		return render_template('booking_agent/index.html', result_searchFlights=data)
+	else:
+		msg = 'No records are found!'
+		return render_template('booking_agent/index.html', message_searchFlights=msg)
 
 
 # View my commission - default

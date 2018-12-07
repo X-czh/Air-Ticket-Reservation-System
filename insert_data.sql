@@ -23,6 +23,10 @@ insert into flight values('China Eastern', 921,
     'JFK', '2018-10-27 13:59:59',
     'PVG', '2018-10-28 13:59:59',
     6000, 'DELAYED', 10003);
+insert into flight values('China Eastern', 929, 
+    'JFK', '2018-12-27 13:59:59',
+    'PVG', '2018-12-28 13:59:59',
+    6000, 'UPCOMING', 10001);
 insert into flight values('United Airlines', 101, 
     'PVG', '2018-6-28 23:59:59',
     'JFK', '2018-6-29 23:59:59',
@@ -39,6 +43,7 @@ insert into flight values('United Airlines', 921,
 insert into ticket values(100, 'China Eastern', 101);
 insert into ticket values(101, 'China Eastern', 121);
 insert into ticket values(102, 'China Eastern', 921);
+insert into ticket values(103, 'China Eastern', 929);
 insert into ticket values(200, 'United Airlines', 101);
 insert into ticket values(201, 'United Airlines', 101);
 insert into ticket values(202, 'United Airlines', 101);
@@ -46,6 +51,7 @@ insert into ticket values(202, 'United Airlines', 101);
 insert into purchases values(100, 'test1@test.com', NULL, '2018-6-28');
 insert into purchases values(101, 'test2@test.com', NULL, '2018-6-28');
 insert into purchases values(102, 'test3@test.com', 102, '2018-6-28');
+insert into purchases values(103, 'test1@test.com', 102, '2018-6-28');
 insert into purchases values(200, 'test2@test.com', 101, '2018-6-28');
 insert into purchases values(201, 'test1@test.com', 101, '2017-6-28');
 insert into purchases values(202, 'test1@test.com', 101, '2017-6-28');

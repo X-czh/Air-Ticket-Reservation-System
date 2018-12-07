@@ -1,71 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Customer Home</title>
+    <title>Customer Menu</title>
     <script type=text/javascript src="{{ url_for('static', filename='Chart.min.js') }}"></script>
 </head>
 <body>
 
-<h1>
-    Welcome, Customer!
-</h1>
+<h1>Welcome, Customer!</h1>
+
+
+<h3>View My Flights</h3>
 
 <form action="viewMyFlights" method="POST">
     <input type="submit" value="View My Upcoming Flights"/>
 </form>
 
-    {% if result_viewMyFlights %}
-    <table>
-        <th>Ticket ID</th>
-        <th>Airline Name</th>
-        <th>Flight Number</th>
-        <th>Airplane ID</th>
-        <th>Departure Airport</th>
-        <th>Departure Time</th>
-        <th>Arrival Airport</th>
-        <th>Arrival Time</th>
-        <th>Ticket Price</th>
-        <th>Status</th>
-        <th>Date of Purchase</th>
-        <th>Booking Agent ID</th>
-        <th>Customer Email</th>
-    
-    
-        {% for flight in result_viewMyFlights %}
-        <tr>
-            <td>{{ flight.ticket_id }}</td>
-            <td>{{ flight.airline_name }}</td>
-            <td>{{ flight.flight_num }}</td>
-            <td>{{ flight.airplane_id }}</td>
-            <td>{{ flight.departure_airport }}</td>
-            <td>{{ flight.departure_time }}</td>
-            <td>{{ flight.arrival_airport }}</td>
-            <td>{{ flight.arrival_time }}</td>
-            <td>{{ flight.status}}</td>
-            <td>{{ flight.price }}</td>
-            <td>{{ flight.purchase_date }}</td>
-            <td>{{ flight.booking_agent_id}}</td>
-            <td>{{ flight.customer_email}}</td>
-        </tr>
-        {% endfor %}
-    
-    </table>
-    {% endif %}
-    
-    {% if error %}
-    <p class="error"><strong>Error:</strong>{{error}}</p>
-    {% endif %}
+<br> Advanced search for View My Flights <br>
+<form action="viewMyFlightsOption" method="POST">
+    <input type="date" name="departure_date" placeholder="Enter Departure Date" required/> 
+    <input type="date" name="arrival_date" placeholder="Enter Arrival Date" required/> 
+    <input type="text" name="departure_airport" placeholder="Enter Departure Airport" required/>
+    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport" required/>
+    <input type="submit" value="View My Flights"/>
+</form>
+
+{% if result_viewMyFlights %}
+<table>
+    <th>Ticket ID</th>
+    <th>Airline Name</th>
+    <th>Flight Number</th>
+    <th>Airplane ID</th>
+    <th>Departure Airport</th>
+    <th>Departure Time</th>
+    <th>Arrival Airport</th>
+    <th>Arrival Time</th>
+    <th>Ticket Price</th>
+    <th>Status</th>
+    <th>Date of Purchase</th>
+    <th>Booking Agent ID</th>
+
+    {% for flight in result_viewMyFlights %}
+    <tr>
+        <td>{{ flight.ticket_id }}</td>
+        <td>{{ flight.airline_name }}</td>
+        <td>{{ flight.flight_num }}</td>
+        <td>{{ flight.airplane_id }}</td>
+        <td>{{ flight.departure_airport }}</td>
+        <td>{{ flight.departure_time }}</td>
+        <td>{{ flight.arrival_airport }}</td>
+        <td>{{ flight.arrival_time }}</td>
+        <td>{{ flight.status}}</td>
+        <td>{{ flight.price }}</td>
+        <td>{{ flight.purchase_date }}</td>
+        <td>{{ flight.booking_agent_id}}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+{% endif %}
+
+{% if message_viewMyFlights %}
+    <p><strong>{{ message_viewMyFlights }}</strong></p>
+{% endif %}
 
 
 <h3>Search For Flights</h3>
+
 <form action="searchFlights" method="POST">
-    <input type="text" name="departure_date" placeholder="Enter Departure Date" /> 
-    <input type="text" name="arrival_date" placeholder="Enter Arrival Date" /> 
-    <input type="text" name="departure_airport" placeholder="Enter Departure Airport"/>
-    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport"/>
+    <input type="date" name="departure_date" placeholder="Enter Departure Date" required/> 
+    <input type="date" name="arrival_date" placeholder="Enter Arrival Date" required/> 
+    <input type="text" name="departure_airport" placeholder="Enter Departure Airport" required/>
+    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport" required/>
 	<input type="submit" value="Search"/>
 </form>
-    
+
 {% if result_searchFlights %}
 <table>
     <th>Airline Name</th>
@@ -111,8 +119,10 @@
 <p><strong>{{message_purchaseTickets}}</strong></p>
 {% endif %}
 
+
+<h3>Track My Spending</h3>
+
 <form action="trackMySpendingDefault" method="POST">
-    <h3>My Spending</h3>
     <input type="submit" value="Show my Recent Spending">
 </form>
 
@@ -185,11 +195,12 @@ var myChart = new Chart(ctx, {
 </script>
 {% endif %}
 
+
+<h3> Track My Spending by Time Period </h3>
+
 <form action="trackMySpendingOptional" method="POST">
-    <h3> Track My Spending by Time Period </h3>
-    <h3> Start - End </h3>
-    <input type="date" name="start_date" placeholder="Start Date" /> 
-    <input type="date" name="end_date" palceholder="End Date" />
+    <input type="date" name="start_date" placeholder="Start Date" required/> 
+    <input type="date" name="end_date" palceholder="End Date" required/>
     <input type="submit" value="Search"/>
 </form>
     {% if total and monthwise %}

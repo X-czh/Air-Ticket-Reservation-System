@@ -27,11 +27,56 @@ def viewMyFlights():
 		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
 		WHERE customer_email = %s AND departure_time > NOW()
 		ORDER BY departure_time '''
-	cursor.execute(query, customer_email)
+	cursor.execute(query, (customer_email))
 	# stores the results in a variable
 	data = cursor.fetchall()
 	cursor.close()
-	return render_template('customer/index.html', result_viewMyFlights=data)
+
+	# check data
+	if data:
+		return render_template('customer/index.html', result_viewMyFlights=data)
+	else:
+		msg = 'No records are found!'
+		return render_template('customer/index.html', message_viewMyFlights=msg)
+
+
+# View my flights option
+@mod.route('/viewMyFlightsOption', methods=['POST'])
+@requires_login_customer
+def viewMyFlightsOption():
+	# grabs information
+	customer_email = session['username']
+	departure_airport = request.form['departure_airport']
+	departure_date = request.form['departure_date']
+	arrival_airport = request.form['arrival_airport']
+	arrival_date = request.form['arrival_date']
+	
+	# check consistence of dates
+	if departure_date > arrival_date:
+		error = 'Error: arrival date is earlier than departure date!'
+		return render_template('customer/index.html', message_viewMyFlights=error)
+
+	# cursor used to send queries
+	cursor = conn.cursor()
+	# executes query
+	query = '''
+		SELECT *
+		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
+		WHERE customer_email = %s AND departure_airport = %s AND 
+			DATE(departure_time) = %s AND arrival_airport = %s AND 
+			DATE(arrival_time) = %s '''
+	cursor.execute(query, (customer_email, departure_airport, departure_date, 
+		arrival_airport, arrival_date))
+	# stores the results in a variable
+	data = cursor.fetchall()
+	cursor.close()
+
+	# check data
+	if data:
+		return render_template('customer/index.html', result_viewMyFlights=data)
+	else:
+		msg = 'No records are found!'
+		return render_template('customer/index.html', message_viewMyFlights=msg)
 
 
 # Purchase tickets
@@ -50,7 +95,8 @@ def purchaseTickets():
 	query = '''
 		SELECT COUNT(*) as count, seats
 		FROM ticket NATURAL JOIN flight NATURAL JOIN airplane
-		WHERE airline_name = %s AND flight_num = %s '''
+		WHERE airline_name = %s AND flight_num = %s
+		GROUP BY airline_name, flight_num '''
 	cursor.execute(query, (airline_name, flight_num))
 	data = cursor.fetchone()
 	if data['count'] < data['seats']:
@@ -86,15 +132,14 @@ def searchFlights():
 	# check consistence of dates
 	if departure_date > arrival_date:
 		error = 'Error: arrival date is earlier than departure date!'
-		return render_template('general/index.html', message_upcoming=error)
+		return render_template('customer/index.html', message_searchFlights=error)
 	
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
-	# TODO
 	query = '''
 		SELECT * 
-		FROM flight NATURAL JOIN ticket NATURAL JOIN purchases
+		FROM flight 
 		WHERE departure_airport = %s AND DATE(departure_time) = %s AND 
 			arrival_airport = %s AND DATE(arrival_time) = %s '''
 	cursor.execute(query, (departure_airport, departure_date, arrival_airport, arrival_date))
@@ -134,7 +179,6 @@ def trackMySpendingDefault():
 		ORDER BY year DESC, month DESC '''
 	cursor.execute(query, (customer_email))
 	monthwise = cursor.fetchall()
-	print(monthwise)
 	cursor.close()
 	return render_template('customer/index.html', total=total, monthwise=monthwise)
 

@@ -5,109 +5,122 @@
 </head>
 <body>
 
-<form action="/viewMyFlights" method="POST">
+<h1>Welcome, Booking Agent!</h1>
+
+
+<h3>View My Flights</h3>
+
+<form action="viewMyFlights" method="POST">
     <input type="submit" value="View My Upcoming Flights"/>
 </form>
-    
-    {% if result_viewMyFlights %}
-    <table>
-        <th>Ticket ID</th>
-        <th>Airline Name</th>
-        <th>Flight Number</th>
-        <th>Airplane ID</th>
-        <th>Departure Airport</th>
-        <th>Departure Time</th>
-        <th>Arrival Airport</th>
-        <th>Arrival Time</th>
-        <th>Ticket Price</th>
-        <th>Status</th>
-        <th>Date of Purchase</th>
-        <th>Booking Agent ID</th>
-        <th>Customer Email</th>
-    
-    
-        {% for flight in result_viewMyFlights %}
-        <tr>
-            <td>{{ flight.ticket_id }}</td>
-            <td>{{ flight.airline_name }}</td>
-            <td>{{ flight.flight_num }}</td>
-            <td>{{ flight.airplane_id }}</td>
-            <td>{{ flight.departure_airport }}</td>
-            <td>{{ flight.departure_time }}</td>
-            <td>{{ flight.arrival_airport }}</td>
-            <td>{{ flight.arrival_time }}</td>
-            <td>{{ flight.status }}</td>
-            <td>{{ flight.price }}</td>
-            <td>{{ flight.purchase_date }}</td>
-            <td>{{ flight.booking_agent_id }}</td>
-            <td>{{ flight.customer_email }}</td>
-                </form>
-        </tr>
-        {% endfor %}
-    
-    </table>
-    {% endif %}
-    
-    {% if error %}
-    <p class="error"><strong>Error:</strong>{{error}}</p>
-    {% endif %}
 
-
-
-<form action="/searchFlights" method="POST">
-    <h3>Search For Flights</h3>
-    <input type="text" name="departure_airport" placeholder="Enter Departure Airport" /> 
-    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport " /> 
-    <input type="text" name="departure_date" placeholder="Enter Departure Date"/>    
-    <input type="submit" value="Search"/>
+<br> Advanced search for View My Flights <br>
+<form action="viewMyFlightsOption" method="POST">
+    <input type="date" name="departure_date" placeholder="Enter Departure Date" required/> 
+    <input type="date" name="arrival_date" placeholder="Enter Arrival Date" required/> 
+    <input type="text" name="departure_airport" placeholder="Enter Departure Airport" required/>
+    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport" required/>
+    <input type="submit" value="View My Flights"/>
 </form>
-    
-    {% if result_searchFlights %}
-    <table>
-        <th>Ticket ID</th>
-        <th>Airline Name</th>
-        <th>Flight Number</th>
-        <th>Airplane ID</th>
-        <th>Departure Airport</th>
-        <th>Departure Time</th>
-        <th>Arrival Airport</th>
-        <th>Arrival Time</th>
-        <th>Ticket Price</th>
-        <th>Status</th>
 
-    
-        {% for flight in result_searchFlights %}
-        <tr>
-            <td>{{ flight.ticket_id }}</td>
-            <td>{{ flight.airline_name }}</td>
-            <td>{{ flight.flight_num }}</td>
-            <td>{{ flight.airplane_id }}</td>
-            <td>{{ flight.departure_airport }}</td>
-            <td>{{ flight.departure_time }}</td>
-            <td>{{ flight.arrival_airport }}</td>
-            <td>{{ flight.arrival_time }}</td>
-            <td>{{ flight.price }}</td>
-            <td>{{ flight.status }}</td>
-            <td>
-                <form action="/purchaseTickets" method = "POST">
-                    <input type="hidden" name="airline_name" value="{{ flight.airline_name }}"/>
-                    <input type="hidden" name="flight_num" value="{{ flight.flight_num }}"/>
-                    <input type="submit" value="Buy Ticket"/>
-                    
-                    {% if result_purchaseTickets %}
-                    alert("{{ result }}");
-                    {% endif %}
+{% if result_viewMyFlights %}
+<table>
+    <th>Ticket ID</th>
+    <th>Airline Name</th>
+    <th>Flight Number</th>
+    <th>Airplane ID</th>
+    <th>Departure Airport</th>
+    <th>Departure Time</th>
+    <th>Arrival Airport</th>
+    <th>Arrival Time</th>
+    <th>Ticket Price</th>
+    <th>Status</th>
+    <th>Date of Purchase</th>
+    <th>Customer Email</th>
 
-                </form>
-        </tr>
-        {% endfor %}
+
+    {% for flight in result_viewMyFlights %}
+    <tr>
+        <td>{{ flight.ticket_id }}</td>
+        <td>{{ flight.airline_name }}</td>
+        <td>{{ flight.flight_num }}</td>
+        <td>{{ flight.airplane_id }}</td>
+        <td>{{ flight.departure_airport }}</td>
+        <td>{{ flight.departure_time }}</td>
+        <td>{{ flight.arrival_airport }}</td>
+        <td>{{ flight.arrival_time }}</td>
+        <td>{{ flight.status }}</td>
+        <td>{{ flight.price }}</td>
+        <td>{{ flight.purchase_date }}</td>
+        <td>{{ flight.customer_email }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+{% endif %}
     
-    </table>
-    {% endif %}
-        
-    {% if error %}
-    <p class="error"><strong>Error:</strong>{{error}}</p>
-    {% endif %}
+{% if message_viewMyFlights %}
+    <p><strong>{{ message_viewMyFlights }}</strong></p>
+{% endif %}
+
+
+<h3>Search For Flights</h3>
+
+<form action="searchFlights" method="POST">
+    <input type="date" name="departure_date" placeholder="Enter Departure Date" required/> 
+    <input type="date" name="arrival_date" placeholder="Enter Arrival Date" required/> 
+    <input type="text" name="departure_airport" placeholder="Enter Departure Airport" required/>
+    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport" required/>
+	<input type="submit" value="Search"/>
+</form>
+
+{% if result_searchFlights %}
+<table>
+    <th>Airline Name</th>
+    <th>Flight Number</th>
+    <th>Airplane ID</th>
+    <th>Departure Airport</th>
+    <th>Departure Time</th>
+    <th>Arrival Airport</th>
+    <th>Arrival Time</th>
+    <th>Ticket Price</th>
+    <th>Status</th>
+
+    {% for flight in result_searchFlights %}
+    <tr>
+        <td>{{ flight.airline_name }}</td>
+        <td>{{ flight.flight_num }}</td>
+        <td>{{ flight.airplane_id }}</td>
+        <td>{{ flight.departure_airport }}</td>
+        <td>{{ flight.departure_time }}</td>
+        <td>{{ flight.arrival_airport }}</td>
+        <td>{{ flight.arrival_time }}</td>
+        <td>{{ flight.price }}</td>
+        <td>{{ flight.status }}</td>
+        <td>
+            <form action="purchaseTickets" method = "POST">
+                <input type="hidden" name="airline_name" value="{{ flight.airline_name }}"/>
+                <input type="hidden" name="flight_num" value="{{ flight.flight_num }}"/>
+                <br>
+                <input type="submit" value="Buy Ticket"/>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>
+{% endif %}
+    
+{% if message_searchFlights %}
+<p><strong>{{message_searchFlights}}</strong></p>
+{% endif %}
+
+{% if message_purchaseTickets %}
+<p><strong>{{message_purchaseTickets}}</strong></p>
+{% endif %}
+
+
+<h3>View My Commission</h3>
 
 <form action="/commission_default" method="POST">
     <input type="submit" value="View My Commissions"/>
