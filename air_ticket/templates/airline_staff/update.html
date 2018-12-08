@@ -4,10 +4,26 @@
 <title>Booking Agent: Update</title>
 </head>
 <body>
+
+
+<form action="createNewFlights" method="POST">
+    <h3>Create New Flights</h3>
+    <input type="text" name="flight_num" placeholder="Enter Flight Number" />
+    <input type="text" name="departure_airport" placeholder="Enter Departure Airport" />
+    <input type="datetime" name="departure_time" placeholder="Enter Departure Time" />
+    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport" />
+    <input type="datetime" name="arrival_time" placeholder="Enter Arrival Time">
+    <input type="text" name="price" placeholder="Enter Ticket Price" />
+    <input type="text" name="status" placeholder="Enter New Flight Status" />
+    <input type="text" name="airplane_id" placeholder="Enter Airplane ID">
+    <input type="submit" value="Update"/>
+</form>
+
+
 <form action="changeFlightStatus" method="POST">
     <h3>Change Flight Status</h3>
     <input type="text" name="flight_num" placeholder="Enter Flight Number" /> 
-    <input type="text" name="status" placeholder="Enter New Flight Status " /> 
+    <input type="text" name="status" placeholder="Enter New Flight Status" /> 
     <input type="submit" value="Update"/>
 </form>
     
