@@ -112,7 +112,7 @@ def purchaseTickets():
 		msg = 'All tickets have been sold out!'
 
 	cursor.close()
-	return render_template('booking_agent/index.html', message=msg)	
+	return render_template('booking_agent/index.html', message_purchaseTickets=msg)	
 
 
 # Search for flights
@@ -254,9 +254,9 @@ def viewTopCustomers():
 
 	# check status
 	msg = None
-	if top5_by_commission != None:
+	if top5_by_commission == None:
 		msg = 'No records in the last year!'
-	elif top5_by_count != None:
+	elif top5_by_count == None:
 		msg = 'No records in the last 6 months!'
 	return render_template('booking_agent/index.html',	
 		top5_by_count=top5_by_count,

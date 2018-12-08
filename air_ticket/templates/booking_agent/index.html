@@ -244,40 +244,23 @@
 
 <h3>View Top Customers</h3>
 
-{% if message_viewTopCustomers %}
-<p><strong>{{message_viewTopCustomers}}</strong></p>
-{% endif %}
-
-
-<style type="text/css">
-    table, th, td{
-        border: 1px solid black;
-    }
-</style>
-
-
-<h3>View Top Customers in the past 6 months</h3>
-
-<form action="trackMySpendingDefault" method="POST">
-    <input type="submit" value="Show my Recent Spending">
+<form action="viewTopCustomers" method="POST">
+    <input type="submit" value="View Top Customers">
 </form>
 
-{% if total %}
-<br>My Total Spending in the Past 6 Month: {{ total }}<br>
+{% if top5_by_count %}
+<p><strong>Top customers based on number of tickets bought in the past 6 months</strong></p>
 <canvas id="myChart1" width="800" height="400"></canvas>
-<canvas id="myChart2" width="800" height="400"></canvas>
 <script>
-var ctx1= document.getElementById("myChart1").getContext('2d');
-var ctx2= document.getElementById("myChart2").getContext('2d');
-
-var myChart1 = new Chart(ctx1, {
+var ctx = document.getElementById("myChart1").getContext('2d');
+var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
         labels: [{% for e in top5_by_count %}
                     "{{e.customer_email}}", 
                 {% endfor %}],
         datasets: [{
-            label: 'Spending',
+            label: 'Number of tickets',
             data: [{% for e in top5_by_count %}
                     {{e.count}},
                 {% endfor %}],
@@ -316,31 +299,38 @@ var myChart1 = new Chart(ctx1, {
             duration: 1,
             onComplete: function () {
                 var chartInstance = this.chart,
-                    ctx1 = chartInstance.ctx1;
-                ctx1.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
-                ctx1.textAlign = 'center';
-                ctx1.textBaseline = 'bottom';
+                    ctx = chartInstance.ctx;
+                ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
 
                 this.data.datasets.forEach(function (dataset, i) {
                     var meta = chartInstance.controller.getDatasetMeta(i);
                     meta.data.forEach(function (bar, index) {
                         var data = dataset.data[index];                            
-                        ctx1.fillText(data, bar._model.x, bar._model.y - 5);
+                        ctx.fillText(data, bar._model.x, bar._model.y - 5);
                     });
                 });
             }
         }
     }
 });
+</script>
+{% endif %}
 
-var myChart2 = new Chart(ctx2, {
+{% if top5_by_commission %}
+<p><strong>Top customers based on amount of commission received in the last year</strong></p>
+<canvas id="myChart2" width="800" height="400"></canvas>
+<script>
+var ctx = document.getElementById("myChart2").getContext('2d');
+var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
         labels: [{% for e in top5_by_commission %}
                     "{{e.customer_email}}", 
                 {% endfor %}],
         datasets: [{
-            label: 'Spending',
+            label: 'Commission',
             data: [{% for e in top5_by_commission %}
                     {{e.commission}},
                 {% endfor %}],
@@ -379,16 +369,16 @@ var myChart2 = new Chart(ctx2, {
             duration: 1,
             onComplete: function () {
                 var chartInstance = this.chart,
-                    ctx2 = chartInstance.ctx2;
-                ctx2.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
-                ctx2.textAlign = 'center';
-                ctx2.textBaseline = 'bottom';
+                    ctx = chartInstance.ctx;
+                ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
 
                 this.data.datasets.forEach(function (dataset, i) {
                     var meta = chartInstance.controller.getDatasetMeta(i);
                     meta.data.forEach(function (bar, index) {
                         var data = dataset.data[index];                            
-                        ctx2.fillText(data, bar._model.x, bar._model.y - 5);
+                        ctx.fillText(data, bar._model.x, bar._model.y - 5);
                     });
                 });
             }
@@ -397,6 +387,17 @@ var myChart2 = new Chart(ctx2, {
 });
 </script>
 {% endif %}
+
+{% if message_viewTopCustomers %}
+<p><strong>{{message_viewTopCustomers}}</strong></p>
+{% endif %}
+
+
+<style type="text/css">
+    table, th, td{
+        border: 1px solid black;
+    }
+</style>
 
 
 <a href="/booking_agent/logout">Logout</a>
