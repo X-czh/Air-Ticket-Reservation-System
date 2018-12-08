@@ -4,20 +4,20 @@
 <title>Airline Staff Menu</title>
 </head>
 <body>
-<h1> Welcome {username}! </h1>
+
+
+<h1>Welcome Airline Staff!</h1>
+
+
 <h3>You may choose to: </h3>
 
-
-<form action="/viewMyFlights" method="POST">
+<form action="viewMyFlights" method="POST">
     <input type="submit" value="View My Upcoming Flights"/>
-</form><br />
-<input type="button" onclick="location.href='/add';" value="Update Flights/Airports/Airplanes" /><br /><br />
-<input type="button" onclick="location.href='/view';" value="View Booking Agents/Customers/Reports" /><br /><br />
-<input type="button" onclick="location.href='/compare';" value="Compare Revenue Earned" /><br /><br />
+</form><br/>
+<input type="button" onclick="location.href='update';" value="Update Flights/Airports/Airplanes" /><br /><br />
+<input type="button" onclick="location.href='view';" value="View Booking Agents/Customers/Reports" /><br /><br />
+<input type="button" onclick="location.href='compare';" value="Compare Revenue Earned" /><br /><br />
 
-
-
-    
     {% if result %}
     <table>
         <th>Ticket ID</th>
@@ -31,9 +31,6 @@
         <th>Ticket Price</th>
         <th>Status</th>
         <th>Date of Purchase</th>
-        <th>Booking Agent ID</th>
-        <th>Customer Email</th>
-    
     
         {% for flight in result %}
         <tr>
@@ -48,22 +45,21 @@
             <td>{{ flight.status}}</td>
             <td>{{ flight.price }}</td>
             <td>{{ flight.purchase_date }}</td>
-            <td>{{ flight.booking_agent_id}}</td>
-            <td>{{ flight.customer_email}}</td>
-                </form>
         </tr>
         {% endfor %}
     
     </table>
     {% endif %}
-    
-    {% if error %}
-    <p class="error"><strong>Error:</strong>{{error}}</p>
-    {% endif %}
 
 
+<style type="text/css">
+    table, th, td{
+        border: 1px solid black;
+    }
+</style>
 
-<a href="/logout">Logout</a>
+
+<a href="logout">Logout</a>
 </body>
 
 </html>

@@ -13,6 +13,27 @@ def homepage():
 	return render_template('airline_staff/index.html')
 
 
+# Define route for update
+@mod.route('/update')
+@requires_login_airline_staff
+def update():
+	return render_template('airline_staff/update.html')
+
+
+# Define route for view
+@mod.route('/view')
+@requires_login_airline_staff
+def view():
+	return render_template('airline_staff/view.html')
+
+
+# Define route for compare
+@mod.route('/compare')
+@requires_login_airline_staff
+def compare():
+	return render_template('airline_staff/compare.html')
+
+
 @mod.route('/createNewFlights', methods=['POST'])
 @requires_login_airline_staff
 def createNewFlights():
