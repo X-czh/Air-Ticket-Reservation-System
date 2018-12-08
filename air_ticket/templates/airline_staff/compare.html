@@ -6,59 +6,89 @@
 </head>
 <body>
 
-
 <h1>Airline Staff: Compare Revenue</h1>
 
 <form action="compareRevenue" method="POST">
     <input type="submit" value="View Revenue Report"/>
 </form>
 
-{% if revenue_last_month and revenue_last_year%}
-    <canvas id="chart1" width="600" height="400"></canvas>
-    <canvas id="chart2" width="600" height="400"></canvas>
-    <script>
-    var pieData_Month = [
+{% if revenue_direct_sale_last_month * revenue_indirect_sale_last_month > 0 %}
+<h3>Compare revenue in the last month</h3>
 
-                {
-                    value: {revenue_last_month.revenue_direct_sale_last_month},
-                    label: "Direct Sales"
-                },
-                {
-                    value: {revenue_last_month.revenue_indirect_sale_last_month},
-                    label: "Indirect Sales"
-                }
+<p><strong>Revenue of Direct Sale: {{revenue_direct_sale_last_month}}</strong></p>
+<p><strong>Revenue of Indirect Sale: {{revenue_indirect_sale_last_month}}</strong></p>
 
- 
- 
-    ];
-    var pieData_Year = [
-
-                {
-                    value: {revenue_last_year.revenue_direct_sale_last_year},
-                    label: "Direct Sales"
-                },
-                {
-                    value: {revenue_last_year.revenue_indirect_sale_last_year},
-                    label: "Indirect Sales"
-                }
-
-
-
-    ];
-
-    var mychart1 = document.getElementById("chart1").getContext("2d");
-    var mychart2 = document.getElementById("chart2").getContext("2d");
- 
-    steps = 10
-    max = 10
-    new Chart(mychart1.Pie(pieData_Month));
-    new Chart(mychar2.Pie(PieData_Year))
- 
-    </script>
+<canvas id="chart1" width="600" height="400"></canvas>
+<script>
+    var ctx = document.getElementById('chart1').getContext('2d');
+    var config = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                data: [
+                    {{revenue_direct_sale_last_month}}, 
+                    {{revenue_indirect_sale_last_month}}
+                ],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.9)',
+                    'rgba(54, 162, 235, 0.9)'
+                ],
+                label: 'Dataset 1'
+            }],
+            labels: [
+                'Direct Sale',
+                'Indirect Sale'
+            ]
+        },
+        options: {
+            responsive: false
+        }
+    };
+    var myPie = new Chart(ctx, config);
+</script>
 {% endif %}
 
+{% if revenue_direct_sale_last_year * revenue_indirect_sale_last_year > 0 %}
+<h3>Compare revenue in the last year</h3>
 
-<a href="/">back</a>
+<p><strong>Revenue of Direct Sale: {{revenue_direct_sale_last_year}}</strong></p>
+<p><strong>Revenue of Indirect Sale: {{revenue_indirect_sale_last_year}}</strong></p>
+
+<canvas id="chart2" width="600" height="400"></canvas>
+<script>
+    var ctx = document.getElementById('chart2').getContext('2d');
+    var config = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                data: [
+                    {{revenue_direct_sale_last_year}}, 
+                    {{revenue_indirect_sale_last_year}}
+                ],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.9)',
+                    'rgba(54, 162, 235, 0.9)'
+                ],
+                label: 'Dataset 1'
+            }],
+            labels: [
+                'Direct Sale',
+                'Indirect Sale'
+            ]
+        },
+        options: {
+            responsive: false
+        }
+    };
+    var myPie = new Chart(ctx, config);
+</script>
+{% endif %}
+
+{% if message %}
+    <p><strong>{{ message }}</strong></p>
+{% endif %}
+
+<br><a href="/">back</a>
 </body>
     
 </html>

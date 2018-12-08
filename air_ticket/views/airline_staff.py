@@ -36,6 +36,34 @@ def compare():
 	return render_template('airline_staff/compare.html')
 
 
+# View my flights
+@mod.route('/viewMyFlights', methods=['POST'])
+@requires_login_airline_staff
+def viewMyFlights():
+	# grabs information
+	customer_email = session['username']
+
+	# cursor used to send queries
+	cursor = conn.cursor()
+	# executes query
+	query = '''
+		SELECT *
+		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
+		WHERE customer_email = %s AND departure_time > NOW()
+		ORDER BY departure_time '''
+	cursor.execute(query, (customer_email))
+	# stores the results in a variable
+	data = cursor.fetchall()
+	cursor.close()
+
+	# check data
+	if data:
+		return render_template('customer/index.html', result_viewMyFlights=data)
+	else:
+		msg = 'No records are found!'
+		return render_template('customer/index.html', message_viewMyFlights=msg)
+
+
 @mod.route('/createNewFlights', methods=['POST'])
 @requires_login_airline_staff
 def createNewFlights():
@@ -300,39 +328,51 @@ def compareRevenue():
 	cursor = conn.cursor()
 	# revenue in the last month
 	query = '''
-		SELECT SUM(price)
+		SELECT SUM(price) as revenue
 		FROM flight NATURAL JOIN ticket NATURAL JOIN purchases
 		WHERE airline_name = %s AND booking_agent_id IS NULL AND 
 			purchase_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND CURDATE() '''
 	cursor.execute(query, (airline_name))
-	revenue_direct_sale_last_month = cursor.fetchone()
+	data = cursor.fetchone()
+	revenue_direct_sale_last_month = 0 if data == None else data['revenue']
 	query = '''
-		SELECT SUM(price)
+		SELECT SUM(price) as revenue
 		FROM flight NATURAL JOIN ticket NATURAL JOIN purchases
 		WHERE airline_name = %s AND booking_agent_id IS NOT NULL AND 
 			purchase_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND CURDATE() '''
 	cursor.execute(query, (airline_name))
-	revenue_indirect_sale_last_month = cursor.fetchone()
-	revenue_last_month = (revenue_direct_sale_last_month, revenue_indirect_sale_last_month)
+	data = cursor.fetchone()
+	revenue_indirect_sale_last_month = 0 if data == None else data['revenue']
 	# revenue in the last year
 	query = '''
-		SELECT SUM(price)
+		SELECT SUM(price) as revenue
 		FROM flight NATURAL JOIN ticket NATURAL JOIN purchases
 		WHERE airline_name = %s AND booking_agent_id IS NULL AND 
 			purchase_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 YEAR) AND CURDATE() '''
 	cursor.execute(query, (airline_name))
-	revenue_direct_sale_last_year = cursor.fetchone()
+	data = cursor.fetchone()
+	revenue_direct_sale_last_year = 0 if data == None else data['revenue']
 	query = '''
-		SELECT SUM(price)
+		SELECT SUM(price) as revenue
 		FROM flight NATURAL JOIN ticket NATURAL JOIN purchases
 		WHERE airline_name = %s AND booking_agent_id IS NOT NULL AND 
 			purchase_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 YEAR) AND CURDATE() '''
 	cursor.execute(query, (airline_name))
-	revenue_indirect_sale_last_year = cursor.fetchone()
-	revenue_last_year = (revenue_direct_sale_last_year, revenue_indirect_sale_last_year)
-	render_template('airline_staff/index.html', 
-		revenue_last_month=revenue_last_month,
-		revenue_last_year=revenue_last_year)
+	data = cursor.fetchone()
+	revenue_indirect_sale_last_year = 0 if data == None else data['revenue']
+
+	# check data
+	msg = None
+	if revenue_direct_sale_last_year * revenue_indirect_sale_last_year == 0:
+		msg = 'No sale in the last year!'
+	elif revenue_direct_sale_last_month * revenue_indirect_sale_last_month == 0:
+		msg = 'No sale in the last month!'
+	return render_template('airline_staff/compare.html', 
+		revenue_direct_sale_last_month=revenue_direct_sale_last_month,
+		revenue_indirect_sale_last_month=revenue_indirect_sale_last_month,
+		revenue_direct_sale_last_year=revenue_direct_sale_last_year,
+		revenue_indirect_sale_last_year=revenue_indirect_sale_last_year,
+		message=msg)
 
 
 # View top3 destinations
