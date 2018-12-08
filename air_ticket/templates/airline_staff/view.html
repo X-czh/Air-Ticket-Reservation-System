@@ -1,110 +1,257 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Booking Agent: View</title>
+    <title>Airline Staff: View</title>
+    <script type=text/javascript src="{{ url_for('static', filename='Chart.min.js') }}"></script>
 </head>
 <body>
+
+
+<h1>Airline Staff: View</h1>
+
+
+<h3>View Top Booking Agents</h3>
+
 <form action="viewTop5BookingAgent" method="POST">
     <input type="submit" value="View Top5 Booking Agents"/>
-</form><br />
+</form><br>
 
-{% if top5bycount_past_month and top5bycount_past_year and top5bycommission_past_year %} 
-<h3>Top 5 Booking Agent in the past Month(by No. of tickets): </h3><br />
-<h3>{{top5bycount_past_month}}</h3><br />
-<h3>Top 5 Booking Agent in thepast year(by No. of tickets): </h3><br />
-<h3>{{top5bycount_past_year}}</h3><br />
-<h3>Top 5 Booking Agent in the past year(by commission): </h3><br />
-<h3>{{top5bycommission_past_year}}</h3><br />
+{% if top5bycount_past_month %}
+    <p><strong>Top 5 Booking Agents in the past month(by No. of tickets):</strong></p>
+    <table>
+        <th>Booking Agent ID</th>
+        <th>Number of Tickets</th>
+        
+        {% for e in top5bycount_past_month %}
+        <tr>
+            <td>{{ e.booking_agent_id }}</td>
+            <td>{{ e.count }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% if top5bycount_past_year %}
+    <p><strong>Top 5 Booking Agents in the past year(by No. of tickets):</strong></p>
+    <table>
+        <th>Booking Agent ID</th>
+        <th>Number of Tickets</th>
+        
+        {% for e in top5bycount_past_year %}
+        <tr>
+            <td>{{ e.booking_agent_id }}</td>
+            <td>{{ e.count }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% if top5bycommission_past_year %}
+    <p><strong>Top 5 Booking Agents in the past year(by commission):</strong></p>
+    <table>
+        <th>Booking Agent ID</th>
+        <th>Commission</th>
+        
+        {% for e in top5bycommission_past_year %}
+        <tr>
+            <td>{{ e.booking_agent_id }}</td>
+            <td>{{ e.commission }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% if message_viewTop5BookingAgent %}
+    <p><strong>{{message_viewTop5BookingAgent}}</strong></p>
 {% endif %}
 
 
+<h3>View Frequent Customers</h3>
 
 <form action="viewFrequentCustomers" method="POST">
-        <input type="submit" value="View Frequent Customers"/>
-    </form><br />
+    <input type="submit" value="View Frequent Customers"/>
+</form><br>
     
-    {% if result_viewFrequentCustomers %} 
-    <h3>Most Frequent Customer in the airline in the past: </h3><br />
-    <h3>{{result_viewFrequentCustomers}}</h3><br />
-    {% endif %}
+{% if result_viewFrequentCustomers %}
+    <p><strong>Most Frequent Customer in the airline in the past year:</strong></p>
+    <table>
+        <th>Customer Email</th>
+        <th>Number of Tickets</th>
+        <th></th>
 
+        {% for e in result_viewFrequentCustomers %}
+        <tr>
+            <td>{{ e.customer_email }}</td>
+            <td>{{ e.count }}</td>
+            <td>
+                <form action="viewFlightsTaken" method="POST">
+                    <input type="hidden" name="customer_email" value={{e.customer_email}}>
+                    <input type="submit" value="View Flights Taken">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
 
+{% if result_viewFlightsTaken %}
+    <p><strong>The customer has taken the following flights of your airline:</strong></p>
+    <table>
+        <th>Customer Email</th>
+        <th>Flight Num</th>
+        <th>Purchase Date</th>
 
-<form action="viewTop3Destitnations" method="POST">
-        <input type="submit" value="View Top 3 Destinations"/>
-</form><br />
+        {% for e in result_viewFlightsTaken %}
+        <tr>
+            <td>{{ e.customer_email }}</td>
+            <td>{{ e.flight_num }}</td>
+            <td>{{ e.purchase_date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
 
-{% if top3_past3month and top3_past1year %} 
-    <h3>Top 3 Destinations in the past 3 months: </h3><br />
-    <h3>{{top3_past3month}</h3><br />
-    <h3>Top 3 Destinations in the past year: </h3><br />
-    <h3>{{top3_past1year}}</h3><br />
+{% if message_viewFrequentCustomers %}
+    <p><strong>{{message_viewFrequentCustomers}}</strong></p>
 {% endif %}
 
 
+<h3>View Top Destinations</h3>
+
+<form action="viewTop3Destinations" method="POST">
+        <input type="submit" value="View Top 3 Destinations"/>
+</form><br>
+
+{% if top3_past3month %}
+    <p><strong>Top 3 Destinations in the past 3 months:</strong></p>
+    <table>
+        <th>Destination Airport</th>
+        <th>City</th>
+        <th>Number of Tickets</th>
+        
+        {% for e in top3_past3month %}
+        <tr>
+            <td>{{ e.arrival_airport }}</td>
+            <td>{{ e.airport_city }}</td>
+            <td>{{ e.count }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% if top3_past1year %}
+    <p><strong>Top 3 Destinations in the past year:</strong></p>
+    <table>
+        <th>Destination Airport</th>
+        <th>City</th>
+        <th>Number of Tickets</th>
+        
+        {% for e in top3_past1year %}
+        <tr>
+            <td>{{ e.arrival_airport }}</td>
+            <td>{{ e.airport_city }}</td>
+            <td>{{ e.count }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% if message_viewTop3Destinations %}
+    <p><strong>{{message_viewTop3Destinations}}</strong></p>
+{% endif %}
+
+
+<h3>View Reports</h3>
 
 <form action="viewReports" method="POST">
-    <input type="date" name="start_date" placeholder="Start Date" /> 
-    <input type="date" name="end_date" placeholder="End Date" /><br />
+    Enter start month: 
+    <input type="month" name="start_month" required/> 
+    Enter end month: 
+    <input type="month" name="end_month" requiresd><br />
     <input type="submit" value="View reports of tickets sold"/>
-</form><br />
+</form><br>
     
-{% if result_viewReports %}
-    <script src='static/Chart.min.js'></script>
-    <body>
-    <h3>MonthWise Tickets Sold</h3>
-    <canvas id="chart" width="600" height="400"></canvas>
-    <script>
-    var labels = [];
-    {% for value in result_viewReports %}
-        labels.push({{value.month}});
-    {% endfor %}
-    
-    var data = [];
-    {% for value in result_viewReports %}
-        data.push({{value.total}});
-    {% endfor %}
+{% if total %}
+<p><strong>Total Amount of Tickets of the airline in the period is: {{ total }}</strong></p>
+<canvas id="myChart1" width="800" height="400"></canvas>
+<script>
+var ctx = document.getElementById("myChart1").getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: [{% for e in monthwise_label %}
+                    "{{e}}", 
+                {% endfor %}],
+        datasets: [{
+            label: 'Amount of Tickets',
+            data: [{% for e in monthwise_total %}
+                    {{e}},
+                {% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255,99,132,1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: false,
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        },
+        hover: {
+            animationDuration: 0
+        },
+        animation: {
+            duration: 1,
+            onComplete: function () {
+                var chartInstance = this.chart,
+                    ctx = chartInstance.ctx;
+                ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
 
-    var barData = {
-        labels : labels,
-        datasets : [
-            {
-                fillColor: "rgba(151,187,205,0.2)",
-                strokeColor: "rgba(151,187,205,1)",
-                pointColor: "rgba(151,187,205,1)",
-                data : data
+                this.data.datasets.forEach(function (dataset, i) {
+                    var meta = chartInstance.controller.getDatasetMeta(i);
+                    meta.data.forEach(function (bar, index) {
+                        var data = dataset.data[index];                            
+                        ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                    });
+                });
             }
-        ]
+        }
     }
- 
-   var mychart = document.getElementById("chart").getContext("2d");
- 
-   steps = 10
-   max = 10
-   new Chart(mychart).Bar(barData, {
-        scaleOverride: true,
-        scaleSteps: steps,
-        scaleStepWidth: Math.ceil(max / steps),
-        scaleStartValue: 0,
-        scaleShowVerticalLines: true,
-        scaleShowGridLines : true,
-        barShowStroke : true,
-        scaleShowLabels: true
-   });
-
- 
-    </script>
-    </body>
+});
+</script>
 {% endif %}
 
-<form action="viewTop5BookingAgent" method="POST">
-    <input type="submit" value="View Top5 Booking Agents"/>
-</form><br />
 
-{% if message %}
-<script>alert("{{message}}")</script>
-{% endif %}    
-    
+{% if message_viewReports %}
+    <p><strong>{{message_viewReports}}</strong></p>
+{% endif %}
+
+
+<style type="text/css">
+    table, th, td{
+        border: 1px solid black;
+    }
+</style>
 
 
 <a href="/">back</a>

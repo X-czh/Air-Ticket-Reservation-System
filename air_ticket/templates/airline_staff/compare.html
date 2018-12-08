@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Booking Agent: Compare Revenue</title>
+    <title>Airline Staff: Compare Revenue</title>
+    <script type=text/javascript src="{{ url_for('static', filename='Chart.min.js') }}"></script>
 </head>
 <body>
+
+
+<h1>Airline Staff: Compare Revenue</h1>
 
 <form action="compareRevenue" method="POST">
     <input type="submit" value="View Revenue Report"/>
 </form>
+
 {% if revenue_last_month and revenue_last_year%}
-    <script src='static/Chart.min.js'></script>   </head><body>
     <canvas id="chart1" width="600" height="400"></canvas>
     <canvas id="chart2" width="600" height="400"></canvas>
     <script>
@@ -51,10 +55,7 @@
     new Chart(mychar2.Pie(PieData_Year))
  
     </script>
-    </body>
 {% endif %}
-
-
 
 
 <a href="/">back</a>

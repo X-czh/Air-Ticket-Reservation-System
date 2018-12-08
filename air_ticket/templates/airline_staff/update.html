@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Booking Agent: Update</title>
+<title>Airline Staff: Update</title>
 </head>
 <body>
 
+<h1>Airline Staff: Update</h1>
 
 <form action="createNewFlights" method="POST">
     <h3>Create New Flights</h3>
+    <p>Note: the departure/arrival time has to be inputed in the format of 'yyyy-mm-dd hh:mm:ss'</p>
     <input type="text" name="flight_num" placeholder="Enter Flight Number" />
     <input type="text" name="departure_airport" placeholder="Enter Departure Airport" />
-    <input type="datetime" name="departure_time" placeholder="Enter Departure Time" />
+    <input type="text" name="departure_time" placeholder="Enter Departure Time" />
     <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport" />
-    <input type="datetime" name="arrival_time" placeholder="Enter Arrival Time">
-    <input type="text" name="price" placeholder="Enter Ticket Price" />
+    <input type="xtte" name="arrival_time" placeholder="Enter Arrival Time">
+    <input type="text" name="price" placeholder="Enter Ticket Price" /><br>
     <input type="text" name="status" placeholder="Enter New Flight Status" />
     <input type="text" name="airplane_id" placeholder="Enter Airplane ID">
     <input type="submit" value="Update"/>
@@ -26,56 +28,31 @@
     <input type="text" name="status" placeholder="Enter New Flight Status" /> 
     <input type="submit" value="Update"/>
 </form>
-    
-                    
-    {% if result_changeFlightStatus %}
-    <script>alert("{{ result_changeFlightStatus }}");</script>
-    {% endif %}
 
-    {% if error %}
-    <p class="error"><strong>Error:</strong>{{error}}</p>
-    {% endif %}
 
 <form action="addNewAirplane" method="POST">
     <h3>Add New Airplane</h3>
     <input type="text" name="airplane_id" placeholder="Enter Airplane ID" /> 
     <input type="text" name="seats" placeholder="Enter Number of Seats" /> 
     <input type="submit" value="Update"/>
-  
 </form>
 
 
-    {% if result_addNewAirplane %}
-    <script>alert("{{ result_addNewAirplane }}");</script>
-    {% endif %}
-
-    {% if error %}
-    <p class="error"><strong>Error:</strong>{{error}}</p>
-    {% endif %}
-
-
-
 <form action="addNewAirport" method="POST">
-        <h3>Add New Airport</h3>
-        <input type="text" name="airport_name" placeholder="Enter Airport Name" /> 
-        <input type="text" name="airport_city" placeholder="Enter City " /> 
-        <input type="submit" value="Update"/>
-      
-    </form>
-    
-    
-        {% if result_addNewAirport %}
-        <script>alert("{{ result_addNewAirport }}");</script>
-        {% endif %}
-    
-        {% if error %}
-        <p class="error"><strong>Error:</strong>{{error}}</p>
-        {% endif %}
-    
-    
+    <h3>Add New Airport</h3>
+    <input type="text" name="airport_name" placeholder="Enter Airport Name" /> 
+    <input type="text" name="airport_city" placeholder="Enter City " /> 
+    <input type="submit" value="Update"/>
+</form>
+
+{% if result %}
+    <script>
+        alert("{{ result }}");
+    </script>
+{% endif %}
 
 
-<a href="/">back</a>
+<br><a href="/">back</a>
 </body>
 
 </html>
