@@ -8,8 +8,12 @@ mod = Blueprint('general', __name__)
 
 # Define route for homepage
 @mod.route('/')
-def hoempage():
-	return render_template('general/index.html')
+def homepage():
+	try:
+		usertype = session['usertype']
+		return redirect(url_for('{}.homepage'.format(usertype)))
+	except:
+		return render_template('general/index.html')
 
 
 # Define route for login

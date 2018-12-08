@@ -19,11 +19,14 @@
 </h2>
 
 <form action="upcoming" method="POST">
-    <input type="text" name="departure_date" placeholder="Enter Departure Date" required/> 
-    <input type="text" name="arrival_date" placeholder="Enter Arrival Date" required/> 
-    <input type="text" name="departure_airport" placeholder="Enter Departure Airport" required/>
-    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport" required/>
-    
+    Enter Departure Date:
+    <input type="date" name="departure_date" required/>
+    Enter Arrival Date:
+    <input type="date" name="arrival_date" required/><br>
+    Enter Departure Airport:
+    <input type="text" name="departure_airport" required/>
+    Enter Arrival Airport:
+    <input type="text" name="arrival_airport" required/>
 	<input type="submit" value="Search"/>
 </form>
 
@@ -66,10 +69,13 @@
 </h2>
 
 <form action="status" method="POST">
-    <input type="text" name="flight_num" placeholder="Enter Flight Number" required/>
-    <input type="text" name="departure_date" placeholder="Enter Departure Date" required/> 
-    <input type="text" name="arrival_date" placeholder="Enter Arrival Date" required/>
-	<input type="submit" value = Search />
+    Enter Flight Number:
+    <input type="text" name="flight_num" required/>
+    Enter Departure Date:
+    <input type="date" name="departure_date" required/>
+    Enter Arrival Date:
+    <input type="date" name="arrival_date" required/>
+	<input type="submit" value = Search/>
 </form>
 
 {% if result_status %}
