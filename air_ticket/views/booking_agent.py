@@ -60,7 +60,7 @@ def viewMyFlightsOption():
 	query = '''
 		SELECT *
 		FROM booking_agent NATURAL JOIN purchases NATURAL JOIN ticket NATURAL JOIN flight
-		WHERE email = %s AND AND DATE(departure_time) BETWEEN %s AND %s '''
+		WHERE email = %s AND DATE(departure_time) BETWEEN %s AND %s '''
 	cursor.execute(query, (booking_agent_email, start_date, end_date))
 	# stores the results in a variable
 	data = cursor.fetchall()
@@ -138,7 +138,7 @@ def searchFlights():
 		FROM flight 
 		WHERE departure_airport = %s AND DATE(departure_time) = %s AND 
 			arrival_airport = %s AND DATE(arrival_time) = %s '''
-	cursor.execute(query, (departure_airport, departure_date, arrival_airport))
+	cursor.execute(query, (departure_airport, departure_date, arrival_airport, arrival_date))
 	# stores the results in a variable
 	data = cursor.fetchall()
 	cursor.close()
@@ -152,7 +152,7 @@ def searchFlights():
 
 
 # View my commission - default
-@mod.route('/commssion_default', methods=['POST'])
+@mod.route('/commission_default', methods=['POST'])
 @requires_login_booking_agent
 def commission_default():
 	# grabs information
@@ -173,22 +173,28 @@ def commission_default():
 	# stores the results in a variable
 	data = cursor.fetchone()
 	cursor.close()
-	return render_template('booking_agent/index.html', result=data)
+	
+	# check data
+	if data['num_tickets'] > 0:
+		return render_template('booking_agent/index.html', result_commission_default=data)
+	else:
+		msg = 'You did not sell any tickets in the period!'
+		return render_template('booking_agent/index.html', message_commission=msg)
 
 
 # View my commission - option
-@mod.route('/commssion_option', methods=['POST'])
+@mod.route('/commission_option', methods=['POST'])
 @requires_login_booking_agent
 def commission_option():
 	# grabs information
 	booking_agent_id = session['booking_agent_id']
 	start_date = request.form['start_date']
-	end_date = request.form['start_date']
+	end_date = request.form['end_date']
 
 	# check consistence of dates
 	if start_date > end_date:
 		error = 'Error: start date is earlier than end date!'
-		return render_template('general/index.html', message_upcoming=error)
+		return render_template('general/index.html', message_commission=error)
 	
 	# cursor used to send queries
 	cursor = conn.cursor()
@@ -205,7 +211,13 @@ def commission_option():
 	# stores the results in a variable
 	data = cursor.fetchone()
 	cursor.close()
-	return render_template('booking_agent/index.html', result=data)
+
+	# check data
+	if data['num_tickets'] > 0:
+		return render_template('booking_agent/index.html', result_commission_option=data)
+	else:
+		msg = 'You did not sell any tickets in the period!'
+		return render_template('booking_agent/index.html', message_commission=msg)
 
 
 # View top customers
@@ -247,7 +259,7 @@ def viewTopCustomers():
 	elif top5_by_count != None:
 		msg = 'No records in the last 6 months!'
 	return render_template('booking_agent/index.html',	
-		top5_by_count=top5_by_count, 
+		top5_by_count=top5_by_count,
 		top5_by_commission=top5_by_commission,
 		message_viewTopCustomers=msg)
 

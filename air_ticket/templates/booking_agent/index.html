@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Booking Agent Menu</title>
+    <title>Booking Agent Menu</title>
+    <script type=text/javascript src="{{ url_for('static', filename='Chart.min.js') }}"></script>
 </head>
 <body>
 
@@ -14,10 +15,13 @@
     <input type="submit" value="View My Upcoming Flights"/>
 </form>
 
-<br> View My Flights by specifying a range of departure date <br>
+<br>OR specify a range of departure date:<br>
+
 <form action="viewMyFlightsOption" method="POST">
-    <input type="text" name="start_date" placeholder="Enter Start Date" required/> 
-    <input type="text" name="end_date" placeholder="Enter End Date" required/>
+    Enter Start Date:
+    <input type="date" name="start_date" required/>
+    Enter End Date:
+    <input type="date" name="end_date" required/>
     <input type="submit" value="View My Flights"/>
 </form>
 
@@ -65,11 +69,15 @@
 <h3>Search For Flights</h3>
 
 <form action="searchFlights" method="POST">
-    <input type="text" name="departure_date" placeholder="Enter Departure Date" required/> 
-    <input type="text" name="arrival_date" placeholder="Enter Arrival Date" required/> 
-    <input type="text" name="departure_airport" placeholder="Enter Departure Airport" required/>
-    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport" required/>
-	<input type="submit" value="Search"/>
+        Enter Departure Date:
+        <input type="date" name="departure_date" required/>
+        Enter Arrival Date:
+        <input type="date" name="arrival_date" required/><br>
+        Enter Departure Airport:
+        <input type="text" name="departure_airport" required/>
+        Enter Arrival Airport:
+        <input type="text" name="arrival_airport" required/>
+        <input type="submit" value="Search"/>
 </form>
 
 {% if result_searchFlights %}
@@ -120,42 +128,51 @@
 
 <h3>View My Commission</h3>
 
-<form action="/commission_default" method="POST">
+<form action="commission_default" method="POST">
     <input type="submit" value="View My Commissions"/>
 </form>
-    {% if result_commission_default %}
-        {% for value in result_commission_default %}
-        <h3> Your total commission: {{ value.tot_commission }}</h3>
-        <h3> Your average commission: {{ value.avg_commission }}</h3>
-        <h3> Number of tickets sold: {{ value.num_tickets }}</h3>
-        {% endfor %}
-    {% endif %}
 
-    {% if error %}
-    <p class="error"><strong>Error:</strong>{{error}}</p>
-    {% endif %}
-
+<br>OR specify a range of date:<br>
     
-    
-    
-<form action="/commission_optional" method="POST">
-    <input type="date" name="start_date" placeholder="Start Date" /> 
-    <input type="date" name="end_date" placeholder="End Date" />
-    <input type="submit" value="Search"/>
+<form action="commission_option" method="POST">
+    Enter Start Date: 
+    <input type="date" name="start_date" required/>
+    Enter End Date:  
+    <input type="date" name="end_date" required/>
+    <input type="submit" value="View My Commissions"/>
 </form>
-    {% if result_commission_optional %}
-        {% for value in result_commission_optional %}
-        <h3> Your total commission: {{ value.tot_commission }}</h3>
-        <h3> Your average commission: {{ value.avg_commission }}</h3>
-        <h3> Number of tickets sold: {{ value.num_tickets }}</h3>
-        {% endfor %}
-    {% endif %}
-    {% if error %}
-    <p class="error"><strong>Error:</strong>{{error}}</p>
-    {% endif %}
 
-    
+{% if result_commission_default %}
+    <p><strong>In the past 30 days,</strong></p>
+    <p><strong>Your total commission: {{ result_commission_default.sum_commission }}</strong></p>
+    <p><strong>Your average commission: {{ result_commission_default.avg_commission }}</strong></p>
+    <p><strong>Number of tickets sold: {{ result_commission_default.num_tickets }}</strong></p>
+{% endif %}
 
+{% if result_commission_option %}
+    <p><strong>In this period,</strong></p>
+    <p><strong>Your total commission: {{ result_commission_option.sum_commission }}</strong></p>
+    <p><strong>Your average commission: {{ result_commission_option.avg_commission }}</strong></p>
+    <p><strong>Number of tickets sold: {{ result_commission_option.num_tickets }}</strong></p>
+{% endif %}
+
+{% if message_commission %}
+    <p><strong>{{ message_commission }}</strong></p>
+{% endif %}
+
+
+<h3>View Top Customers</h3>
+
+{% if message_viewTopCustomers %}
+<p><strong>{{message_viewTopCustomers}}</strong></p>
+{% endif %}
+
+
+<style type="text/css">
+    table, th, td{
+        border: 1px solid black;
+    }
+</style>
 
 
 <a href="/booking_agent/logout">Logout</a>
