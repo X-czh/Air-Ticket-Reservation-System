@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template, request, session, redirect
+from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from air_ticket import conn
 from air_ticket.utils import requires_login_customer
 
@@ -157,25 +159,42 @@ def trackMySpendingDefault():
 	# grabs information
 	customer_email = session['username']
 
+	# computes date
+	end_date = (date.today() + relativedelta(months=+1)).replace(day=1)
+	end_date_str = end_date.strftime('%Y-%m-%d')
+	start_date = end_date - relativedelta(months=+6)
+	start_date_str = start_date.strftime('%Y-%m-%d')
+
 	# cursor used to send queries
 	cursor = conn.cursor()
-	# executes query
+	# query
 	query = ''' 
 		SELECT SUM(price) as total
 		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
-		WHERE customer_email = %s AND purchase_date >= DATE_SUB(NOW(), INTERVAL 1 YEAR) '''
-	cursor.execute(query, (customer_email))
-	total = cursor.fetchone()
-	query = ''' 
-		SELECT YEAR(departure_time) as year, MONTH(departure_time) as month, SUM(price) as total
-		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
-		WHERE customer_email = %s AND purchase_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-		GROUP BY year, month 
-		ORDER BY year DESC, month DESC '''
-	cursor.execute(query, (customer_email))
-	monthwise = cursor.fetchall()
+		WHERE customer_email = %s AND purchase_date >= %s AND purchase_date < %s'''
+	
+	# total
+	cursor.execute(query, (customer_email, start_date_str, end_date_str))
+	data = cursor.fetchone()
+	total = data['total']
+
+	# monthwise
+	monthwise_label = []
+	monthwise_total = []
+	end_date = start_date + relativedelta(months=+1)
+	for _ in range(6):
+		start_date_str = start_date.strftime('%Y-%m-%d')
+		end_date_str = end_date.strftime('%Y-%m-%d')
+		cursor.execute(query, (customer_email, start_date_str, end_date_str))
+		monthwise = cursor.fetchone()
+		monthwise_label.append(start_date.strftime('%y/%m'))
+		monthwise_total.append(monthwise['total'] if monthwise['total'] != None else 0)
+		start_date += relativedelta(months=+1)
+		end_date += relativedelta(months=+1)
+
 	cursor.close()
-	return render_template('customer/index.html', total=total, monthwise=monthwise)
+	return render_template('customer/index.html', total=total, 
+		monthwise_label=monthwise_label, monthwise_total=monthwise_total)
 
 
 # Track my spending optional view
@@ -184,28 +203,51 @@ def trackMySpendingDefault():
 def trackMySpendingOptional():
 	# grabs information
 	customer_email = session['username']
-	start_date = request.form['start_date']
-	end_date = request.form['end_date']
+	start_month = request.form['start_month']
+	end_month = request.form['end_month']
+
+	# check consistence of months
+	if start_month > end_month:
+		error = 'Error: end month is earlier than start month!'
+		return render_template('customer/index.html', message_trackMySpendingOptional=error)
+
+	# computes date
+	start_date = datetime.strptime(start_month, '%Y-%m').date()
+	start_date_str = start_date.strftime('%Y-%m-%d')
+	end_date = datetime.strptime(end_month, '%Y-%m').date() + relativedelta(months=+1)
+	end_date_str = end_date.strftime('%Y-%m-%d')
+	diff = (end_date.year - start_date.year) * 12 + (end_date.month - start_date.month)
 
 	# cursor used to send queries
 	cursor = conn.cursor()
-	# executes query
-	query = '''
+	# query
+	query = ''' 
 		SELECT SUM(price) as total
 		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
-		WHERE customer_email = %s AND purchase_date BETWEEN %s AND %s '''
-	cursor.execute(query, (customer_email, start_date, end_date))
-	total = cursor.fetchone()
-	query = ''' 
-		SELECT YEAR(departure_time) as year, MONTH(departure_time) as month, SUM(price) as total
-		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
-		WHERE customer_email = %s AND purchase_date BETWEEN %s AND %s
-		GROUP BY year, month 
-		ORDER BY year DESC, month DESC '''
-	cursor.execute(query, (customer_email, start_date, end_date))
-	monthwise = cursor.fetchall()
+		WHERE customer_email = %s AND purchase_date >= %s AND purchase_date < %s'''
+	
+	# total
+	cursor.execute(query, (customer_email, start_date_str, end_date_str))
+	data = cursor.fetchone()
+	total = data['total']
+
+	# monthwise
+	monthwise_label = []
+	monthwise_total = []
+	end_date = start_date + relativedelta(months=+1)
+	for _ in range(diff):
+		start_date_str = start_date.strftime('%Y-%m-%d')
+		end_date_str = end_date.strftime('%Y-%m-%d')
+		cursor.execute(query, (customer_email, start_date_str, end_date_str))
+		monthwise = cursor.fetchone()
+		monthwise_label.append(start_date.strftime('%y/%m'))
+		monthwise_total.append(monthwise['total'] if monthwise['total'] != None else 0)
+		start_date += relativedelta(months=+1)
+		end_date += relativedelta(months=+1)
+
 	cursor.close()
-	return render_template('customer/index.html', total=total, monthwise=monthwise)
+	return render_template('customer/index.html', total_option=total, 
+		monthwise_label_option=monthwise_label, monthwise_total_option=monthwise_total)
 
 
 # Define route for logout

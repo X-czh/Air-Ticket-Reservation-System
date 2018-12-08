@@ -15,10 +15,14 @@
     <input type="submit" value="View My Upcoming Flights"/>
 </form>
 
-<br> View My Flights by specifying a range of departure date <br>
+
+<h3>View My Flights by specifying a range of departure date</h3>
+
 <form action="viewMyFlightsOption" method="POST">
-    <input type="text" name="start_date" placeholder="Enter Start Date" required/> 
-    <input type="text" name="end_date" placeholder="Enter End Date" required/>
+    Enter Start Date:
+    <input type="date" name="start_date" required/>
+    Enter End Date:
+    <input type="date" name="end_date" required/>
     <input type="submit" value="View My Flights"/>
 </form>
 
@@ -65,11 +69,15 @@
 <h3>Search For Flights</h3>
 
 <form action="searchFlights" method="POST">
-    <input type="text" name="departure_date" placeholder="Enter Departure Date" required/> 
-    <input type="text" name="arrival_date" placeholder="Enter Arrival Date" required/> 
-    <input type="text" name="departure_airport" placeholder="Enter Departure Airport" required/>
-    <input type="text" name="arrival_airport" placeholder="Enter Arrival Airport" required/>
-	<input type="submit" value="Search"/>
+        Enter Departure Date:
+        <input type="date" name="departure_date" required/>
+        Enter Arrival Date:
+        <input type="date" name="arrival_date" required/><br>
+        Enter Departure Airport:
+        <input type="text" name="departure_airport" required/>
+        Enter Arrival Airport:
+        <input type="text" name="arrival_airport" required/>
+        <input type="submit" value="Search"/>
 </form>
 
 {% if result_searchFlights %}
@@ -118,26 +126,27 @@
 {% endif %}
 
 
-<h3>Track My Spending</h3>
+<h3>Track My Spending in the Past 6 Months</h3>
 
 <form action="trackMySpendingDefault" method="POST">
     <input type="submit" value="Show my Recent Spending">
 </form>
 
-{% if total and monthwise %}
-<canvas id="myChart" width="800" height="400"></canvas>
+{% if total %}
+<br>My Total Spending in the Past 6 Month: {{ total }}<br>
+<canvas id="myChart1" width="800" height="400"></canvas>
 <script>
-var ctx = document.getElementById("myChart").getContext('2d');
+var ctx = document.getElementById("myChart1").getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
-        labels: [{% for value in monthwise %}
-                    '{{value.year}}' + '/' + '{{value.month}}', 
+        labels: [{% for e in monthwise_label %}
+                    "{{e}}", 
                 {% endfor %}],
         datasets: [{
-            label: '# of Votes',
-            data: [{% for value in monthwise %}
-                    {{value.total}},
+            label: 'Spending',
+            data: [{% for e in monthwise_total %}
+                    {{e}},
                 {% endfor %}],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
@@ -197,60 +206,86 @@ var myChart = new Chart(ctx, {
 <h3> Track My Spending by Time Period </h3>
 
 <form action="trackMySpendingOptional" method="POST">
-    <input type="date" name="start_date" placeholder="Start Date" required/> 
-    <input type="date" name="end_date" palceholder="End Date" required/>
+    Enter Start Month:
+    <input type="month" name="start_month" required/>
+    Enter End Month:
+    <input type="month" name="end_month" required/>
     <input type="submit" value="Search"/>
 </form>
-    {% if total and monthwise %}
-    <body>
-    <h3>Total Spending: "{{ total }}"</h3>
-    <canvas id="chart" width="600" height="400"></canvas>
-    <script>
-        var labels = [];
-        {% for value in monthwise %}
-            labels.push({{ value.year }} + {{ value.month }});
-        {% endfor %}
-        console.log(labels);
-        
-        var data = [];
-        {% for value in monthwise %}
-            data.push({{ value.total }});
-        {% endfor %}
-        console.log(data);
 
-        var barData = {
-            labels : labels,
-            datasets : [
-                {
-                    fillColor: "rgba(151,187,205,0.2)",
-                    strokeColor: "rgba(151,187,205,1)",
-                    pointColor: "rgba(151,187,205,1)",
-                    data : data
+{% if total_option %}
+<br>My Total Spending in the Period: {{ total_option }}<br>
+<canvas id="myChart2" width="800" height="400"></canvas>
+<script>
+var ctx = document.getElementById("myChart2").getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: [{% for e in monthwise_label_option %}
+                    "{{e}}", 
+                {% endfor %}],
+        datasets: [{
+            label: 'Spending',
+            data: [{% for e in monthwise_total_option %}
+                    {{e}},
+                {% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255,99,132,1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: false,
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
                 }
-            ]
+            }]
+        },
+        hover: {
+            animationDuration: 0
+        },
+        animation: {
+            duration: 1,
+            onComplete: function () {
+                var chartInstance = this.chart,
+                    ctx = chartInstance.ctx;
+                ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+
+                this.data.datasets.forEach(function (dataset, i) {
+                    var meta = chartInstance.controller.getDatasetMeta(i);
+                    meta.data.forEach(function (bar, index) {
+                        var data = dataset.data[index];                            
+                        ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                    });
+                });
+            }
         }
-     
-       var mychart = document.getElementById("chart").getContext("2d");
-     
-       steps = 10
-       max = 10
-       // draw bar chart
-       new Chart(mychart).Bar(barData, {
-            scaleOverride: true,
-            scaleSteps: steps,
-            scaleStepWidth: Math.ceil(max / steps),
-            scaleStartValue: 0,
-            scaleShowVerticalLines: true,
-            scaleShowGridLines : true,
-            barShowStroke : true,
-            scaleShowLabels: true
-       });
+    }
+});
+</script>
+{% endif %}
 
-    {% endif %}
-     
-    </script>
-    </body>
-
+{% if message_trackMySpendingOptional %}
+    <p><strong>{{ message_trackMySpendingOptional }}</strong></p>
+{% endif %}
 
 <style type="text/css">
     table, th, td{
