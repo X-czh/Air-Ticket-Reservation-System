@@ -9,7 +9,7 @@ $ python run.py
 The configuration of MySQL connection can be found in air_tickets/\_\_init\_\_.py file.
 
 ## Document
-See [User Cases](https://github.com/X-czh/Air-Ticket-Reservation-System/blob/master/User%20Cases) and [File Descriptions](https://github.com/X-czh/Air-Ticket-Reservation-System/blob/master/File%20Descriptions.pdf).
+See [User Cases](https://github.com/X-czh/Air-Ticket-Reservation-System/blob/master/User%20Cases.pdf) and [File Descriptions](https://github.com/X-czh/Air-Ticket-Reservation-System/blob/master/File%20Descriptions.pdf).
 
 ## Dependency
 - MySQL
