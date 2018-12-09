@@ -6,50 +6,93 @@
 <body>
 
 
-<h1>Welcome Airline Staff!</h1>
+<h1>Welcome, Airline Staff!</h1>
 
 
-<h3>You may choose to: </h3>
+<h3>View my upcoming flights in the next 30 days</h3>
 
 <form action="viewMyFlights" method="POST">
-    <input type="submit" value="View My Upcoming Flights"/>
-</form><br/>
+    <input type="submit" value="View My Upcoming Flights">
+</form>
+
+<p><strong>OR specify the departure/arrival airports and a range of departure date: </strong><p>
+
+<form action="viewMyFlightsOption" method="POST">
+    Enter Start Date:
+    <input type="date" name="start_date" required>
+    Enter End Date:
+    <input type="date" name="end_date" required><br>
+    Enter Departure Airport:
+    <input type="text" name="departure_airport" required>
+    Enter Arrival Airport:
+    <input type="text" name="arrival_airport" required><br>
+    <input type="submit" value="View My Flights">
+</form><br>
+
+{% if result_viewMyFlights %}
+<table>
+    <th>Airline Name</th>
+    <th>Flight Number</th>
+    <th>Airplane ID</th>
+    <th>Departure Airport</th>
+    <th>Departure Time</th>
+    <th>Arrival Airport</th>
+    <th>Arrival Time</th>
+    <th>Ticket Price</th>
+    <th>Status</th>
+    <th></th>
+
+    {% for flight in result_viewMyFlights %}
+    <tr>
+        <td>{{ flight.airline_name }}</td>
+        <td>{{ flight.flight_num }}</td>
+        <td>{{ flight.airplane_id }}</td>
+        <td>{{ flight.departure_airport }}</td>
+        <td>{{ flight.departure_time }}</td>
+        <td>{{ flight.arrival_airport }}</td>
+        <td>{{ flight.arrival_time }}</td>
+        <td>{{ flight.status }}</td>
+        <td>{{ flight.price }}</td>
+        <td>
+            <form action="viewAllCustomers" method="POST">
+                <input type="hidden" name="flight_num" value={{flight.flight_num}}>
+                <input type="submit" value="View All Customers">
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% if result_viewAllCustomers %}
+    <p><strong>List of all customers on the flight ({{airline_name}}, {{flight_num}}): </strong></p>
+    <table>
+        <th>Ticket ID</th>
+        <th>Customer Email</th>
+        <th>Booking Agent ID</th>
+        <th>Purchase Date</th>
+        
+        {% for e in result_viewAllCustomers %}
+        <tr>
+            <td>{{ e.ticket_id }}</td>
+            <td>{{ e.customer_email }}</td>
+            <td>{{ e.booking_agent_id }}</td>
+            <td>{{ e.purchase_date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% if message %}
+    <p><strong>{{ message }}</strong></p>
+{% endif %}
+
+
+<h3>You may also choose to: </h3>
+
 <input type="button" onclick="location.href='update';" value="Update Flights/Airports/Airplanes" /><br /><br />
 <input type="button" onclick="location.href='view';" value="View Booking Agents/Customers/Reports" /><br /><br />
 <input type="button" onclick="location.href='compare';" value="Compare Revenue Earned" /><br /><br />
-
-    {% if result %}
-    <table>
-        <th>Ticket ID</th>
-        <th>Airline Name</th>
-        <th>Flight Number</th>
-        <th>Airplane ID</th>
-        <th>Departure Airport</th>
-        <th>Departure Time</th>
-        <th>Arrival Airport</th>
-        <th>Arrival Time</th>
-        <th>Ticket Price</th>
-        <th>Status</th>
-        <th>Date of Purchase</th>
-    
-        {% for flight in result %}
-        <tr>
-            <td>{{ flight.ticket_id }}</td>
-            <td>{{ flight.airline_name }}</td>
-            <td>{{ flight.flight_num }}</td>
-            <td>{{ flight.airplane_id }}</td>
-            <td>{{ flight.departure_airport }}</td>
-            <td>{{ flight.departure_time }}</td>
-            <td>{{ flight.arrival_airport }}</td>
-            <td>{{ flight.arrival_time }}</td>
-            <td>{{ flight.status}}</td>
-            <td>{{ flight.price }}</td>
-            <td>{{ flight.purchase_date }}</td>
-        </tr>
-        {% endfor %}
-    
-    </table>
-    {% endif %}
 
 
 <style type="text/css">
@@ -60,6 +103,7 @@
 
 
 <a href="logout">Logout</a>
-</body>
 
+
+</body>
 </html>

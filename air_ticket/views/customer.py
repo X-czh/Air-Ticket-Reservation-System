@@ -176,7 +176,7 @@ def trackMySpendingDefault():
 	# total
 	cursor.execute(query, (customer_email, start_date_str, end_date_str))
 	data = cursor.fetchone()
-	total = data['total']
+	total = data['total'] if data['total'] != None else 0
 
 	# monthwise
 	monthwise_label = []
@@ -229,7 +229,7 @@ def trackMySpendingOptional():
 	# total
 	cursor.execute(query, (customer_email, start_date_str, end_date_str))
 	data = cursor.fetchone()
-	total = data['total']
+	total = data['total'] if data['total'] != None else 0
 
 	# monthwise
 	monthwise_label = []

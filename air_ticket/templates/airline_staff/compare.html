@@ -12,6 +12,7 @@
     <input type="submit" value="View Revenue Report"/>
 </form>
 
+{% if revenue_direct_sale_last_month %}
 {% if revenue_direct_sale_last_month * revenue_indirect_sale_last_month > 0 %}
 <h3>Compare revenue in the last month</h3>
 
@@ -47,7 +48,9 @@
     var myPie = new Chart(ctx, config);
 </script>
 {% endif %}
+{% endif %}
 
+{% if revenue_direct_sale_last_year %}
 {% if revenue_direct_sale_last_year * revenue_indirect_sale_last_year > 0 %}
 <h3>Compare revenue in the last year</h3>
 
@@ -82,6 +85,7 @@
     };
     var myPie = new Chart(ctx, config);
 </script>
+{% endif %}
 {% endif %}
 
 {% if message %}

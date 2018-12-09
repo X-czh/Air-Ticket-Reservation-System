@@ -1,3 +1,5 @@
+use air_ticket;
+
 CREATE TABLE `airline` (
   `airline_name` varchar(50) NOT NULL,
   PRIMARY KEY(`airline_name`)

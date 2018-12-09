@@ -40,21 +40,21 @@ insert into flight values('United Airlines', 921,
     'PVG', '2017-10-28 13:59:59',
     6000, 'DELAYED', 10003);
 
-insert into ticket values(100, 'China Eastern', 101);
-insert into ticket values(101, 'China Eastern', 121);
-insert into ticket values(102, 'China Eastern', 921);
-insert into ticket values(103, 'China Eastern', 929);
-insert into ticket values(200, 'United Airlines', 101);
-insert into ticket values(201, 'United Airlines', 101);
-insert into ticket values(202, 'United Airlines', 101);
+insert into ticket values(1, 'China Eastern', 101);
+insert into ticket values(2, 'China Eastern', 121);
+insert into ticket values(3, 'China Eastern', 921);
+insert into ticket values(4, 'China Eastern', 929);
+insert into ticket values(5, 'United Airlines', 101);
+insert into ticket values(6, 'United Airlines', 101);
+insert into ticket values(7, 'United Airlines', 101);
 
-insert into purchases values(100, 'test1@test.com', NULL, '2018-6-28');
-insert into purchases values(101, 'test2@test.com', NULL, '2018-6-28');
-insert into purchases values(102, 'test3@test.com', 102, '2018-6-28');
-insert into purchases values(103, 'test1@test.com', 102, '2018-6-28');
-insert into purchases values(200, 'test2@test.com', 101, '2018-6-28');
-insert into purchases values(201, 'test1@test.com', 101, '2017-6-28');
-insert into purchases values(202, 'test1@test.com', 101, '2017-6-28');
+insert into purchases values(1, 'test1@test.com', NULL, '2018-6-28');
+insert into purchases values(2, 'test2@test.com', NULL, '2018-6-28');
+insert into purchases values(3, 'test3@test.com', 102, '2018-6-28');
+insert into purchases values(4, 'test1@test.com', 102, '2018-6-28');
+insert into purchases values(5, 'test2@test.com', 101, '2018-6-28');
+insert into purchases values(6, 'test1@test.com', 101, '2017-6-28');
+insert into purchases values(7, 'test1@test.com', 101, '2017-6-28');
 
 -- Customer 1:
 -- Email: test1@test.com

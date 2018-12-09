@@ -254,9 +254,9 @@ def viewTopCustomers():
 
 	# check status
 	msg = None
-	if top5_by_commission == None:
+	if top5_by_commission == None or top5_by_commission == ():
 		msg = 'No records in the last year!'
-	elif top5_by_count == None:
+	elif top5_by_count == None or top5_by_count == ():
 		msg = 'No records in the last 6 months!'
 	return render_template('booking_agent/index.html',	
 		top5_by_count=top5_by_count,

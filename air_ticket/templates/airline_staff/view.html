@@ -171,7 +171,7 @@
     <input type="submit" value="View reports of tickets sold"/>
 </form><br>
     
-{% if total %}
+{% if total != None and monthwise_label %}
 <p><strong>Total Amount of Tickets of the airline in the period is: {{ total }}</strong></p>
 <canvas id="myChart1" width="800" height="400"></canvas>
 <script>
@@ -240,12 +240,6 @@ var myChart = new Chart(ctx, {
 });
 </script>
 {% endif %}
-
-
-{% if message_viewReports %}
-    <p><strong>{{message_viewReports}}</strong></p>
-{% endif %}
-
 
 <style type="text/css">
     table, th, td{

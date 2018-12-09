@@ -36,32 +36,100 @@ def compare():
 	return render_template('airline_staff/compare.html')
 
 
-# View my flights
+# View my flights in the next 30 days
 @mod.route('/viewMyFlights', methods=['POST'])
 @requires_login_airline_staff
 def viewMyFlights():
 	# grabs information
-	customer_email = session['username']
+	airline_name = session['airline_name']
 
 	# cursor used to send queries
 	cursor = conn.cursor()
 	# executes query
 	query = '''
 		SELECT *
-		FROM purchases NATURAL JOIN ticket NATURAL JOIN flight
-		WHERE customer_email = %s AND departure_time > NOW()
+		FROM flight
+		WHERE airline_name = %s AND 
+			departure_time BETWEEN CURDATE() AND DATE_ADD(NOW(), INTERVAL 30 DAY)
 		ORDER BY departure_time '''
-	cursor.execute(query, (customer_email))
+	cursor.execute(query, (airline_name))
 	# stores the results in a variable
 	data = cursor.fetchall()
 	cursor.close()
 
 	# check data
 	if data:
-		return render_template('customer/index.html', result_viewMyFlights=data)
+		return render_template('airline_staff/index.html', result_viewMyFlights=data)
 	else:
 		msg = 'No records are found!'
-		return render_template('customer/index.html', message_viewMyFlights=msg)
+		return render_template('airline_staff/index.html', message=msg)
+
+
+# View my flights option - sepcifying departure/arrival airport and a range of departure date
+@mod.route('/viewMyFlightsOption', methods=['POST'])
+@requires_login_airline_staff
+def viewMyFlightsOption():
+	# grabs information
+	airline_name = session['airline_name']
+	start_date = request.form['start_date']
+	end_date = request.form['end_date']
+	departure_airport = request.form['departure_airport']
+	arrival_airport = request.form['arrival_airport']
+	
+	# check consistence of dates
+	if start_date > end_date:
+		error = 'Error: end date is earlier than start date!'
+		return render_template('airline_staff/index.html', message=error)
+
+	# cursor used to send queries
+	cursor = conn.cursor()
+	# executes query
+	query = '''
+		SELECT *
+		FROM flight
+		WHERE airline_name = %s AND departure_airport = %s 
+			AND arrival_airport = %s AND departure_time BETWEEN %s AND %s
+		ORDER BY departure_time DESC '''
+	cursor.execute(query, (airline_name, departure_airport, arrival_airport, 
+		start_date, end_date))
+	# stores the results in a variable
+	data = cursor.fetchall()
+	cursor.close()
+
+	# check data
+	if data:
+		return render_template('airline_staff/index.html', result_viewMyFlights=data)
+	else:
+		msg = 'No records are found!'
+		return render_template('airline_staff/index.html', message=msg)
+
+
+# View all customers of a flight, sub module for view my flights
+@mod.route('/viewAllCustomers', methods=['POST'])
+@requires_login_airline_staff
+def viewAllCustomers():
+	# grabs information
+	airline_name = session['airline_name']
+	flight_num = request.form['flight_num']
+
+	# cursor used to send queries
+	cursor = conn.cursor()
+	# executes query
+	query = '''
+		SELECT ticket_id, customer_email, booking_agent_id, purchase_date
+		FROM ticket NATURAL JOIN purchases
+		WHERE airline_name = %s AND flight_num = %s
+		ORDER by purchase_date DESC '''
+	cursor.execute(query, (airline_name, flight_num))
+	data = cursor.fetchall()
+
+	# check data
+	if data:
+		return render_template('airline_staff/index.html', airline_name=airline_name, 
+			flight_num=flight_num, result_viewAllCustomers=data)
+	else:
+		msg = 'No customers yet!'
+		return render_template('airline_staff/index.html', message=msg)
 
 
 @mod.route('/createNewFlights', methods=['POST'])
@@ -205,9 +273,9 @@ def viewTop5BookingAgent():
 
 	# check data
 	msg = None
-	if top5bycount_past_year == None:
+	if top5bycount_past_year == None or top5bycount_past_year == ():
 		msg = 'No records in the last year!'
-	elif top5bycount_past_month == None:
+	elif top5bycount_past_month == None or top5bycount_past_month == ():
 		msg = 'No records in the last month!'
 	return render_template('airline_staff/view.html', 
 		top5bycount_past_month=top5bycount_past_month,
@@ -236,7 +304,7 @@ def viewFrequentCustomers():
 	cursor.execute(query, (airline_name))
 	data = cursor.fetchall()
 
-	if data:
+	if data != None and data != ():
 		return render_template('airline_staff/view.html', result_viewFrequentCustomers=data)
 	else:
 		msg = 'No records are found!'
@@ -296,12 +364,13 @@ def viewReports():
 	# total
 	cursor.execute(query, (airline_name, start_date_str, end_date_str))
 	data = cursor.fetchone()
-	total = data['total']
+	total = data['total'] if data['total'] != None else 0
 
 	# monthwise
 	monthwise_label = []
 	monthwise_total = []
 	end_date = start_date + relativedelta(months=+1)
+
 	for _ in range(diff):
 		start_date_str = start_date.strftime('%Y-%m-%d')
 		end_date_str = end_date.strftime('%Y-%m-%d')
@@ -334,7 +403,13 @@ def compareRevenue():
 			purchase_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND CURDATE() '''
 	cursor.execute(query, (airline_name))
 	data = cursor.fetchone()
-	revenue_direct_sale_last_month = 0 if data == None else data['revenue']
+	if data == None:
+		revenue_direct_sale_last_month = 0
+	elif data['revenue'] == None:
+		revenue_direct_sale_last_month = 0
+	else:
+		revenue_direct_sale_last_month = data['revenue']
+
 	query = '''
 		SELECT SUM(price) as revenue
 		FROM flight NATURAL JOIN ticket NATURAL JOIN purchases
@@ -342,7 +417,13 @@ def compareRevenue():
 			purchase_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND CURDATE() '''
 	cursor.execute(query, (airline_name))
 	data = cursor.fetchone()
-	revenue_indirect_sale_last_month = 0 if data == None else data['revenue']
+	if data == None:
+		revenue_indirect_sale_last_month = 0
+	elif data['revenue'] == None:
+		revenue_indirect_sale_last_month = 0
+	else:
+		revenue_indirect_sale_last_month = data['revenue']	
+
 	# revenue in the last year
 	query = '''
 		SELECT SUM(price) as revenue
@@ -351,7 +432,13 @@ def compareRevenue():
 			purchase_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 YEAR) AND CURDATE() '''
 	cursor.execute(query, (airline_name))
 	data = cursor.fetchone()
-	revenue_direct_sale_last_year = 0 if data == None else data['revenue']
+	if data == None:
+		revenue_direct_sale_last_year = 0
+	elif data['revenue'] == None:
+		revenue_direct_sale_last_year = 0
+	else:
+		revenue_direct_sale_last_year = data['revenue']
+
 	query = '''
 		SELECT SUM(price) as revenue
 		FROM flight NATURAL JOIN ticket NATURAL JOIN purchases
@@ -359,7 +446,12 @@ def compareRevenue():
 			purchase_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 YEAR) AND CURDATE() '''
 	cursor.execute(query, (airline_name))
 	data = cursor.fetchone()
-	revenue_indirect_sale_last_year = 0 if data == None else data['revenue']
+	if data == None:
+		revenue_indirect_sale_last_year = 0
+	elif data['revenue'] == None:
+		revenue_indirect_sale_last_year = 0
+	else:
+		revenue_indirect_sale_last_year = data['revenue']	
 
 	# check data
 	msg = None
@@ -409,9 +501,9 @@ def viewTop3Destinations():
 
 	# check data
 	msg = None
-	if top3_past1year == None:
+	if top3_past1year == None or top3_past1year == ():
 		msg = 'No records in the last year!'
-	elif top3_past3month == None:
+	elif top3_past3month == None or top3_past3month == ():
 		msg = 'No records in the last 3 months!'
 	return render_template('airline_staff/view.html', 
 		top3_past3month=top3_past3month,

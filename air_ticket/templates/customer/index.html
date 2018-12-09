@@ -50,8 +50,8 @@
         <td>{{ flight.departure_time }}</td>
         <td>{{ flight.arrival_airport }}</td>
         <td>{{ flight.arrival_time }}</td>
-        <td>{{ flight.status}}</td>
         <td>{{ flight.price }}</td>
+        <td>{{ flight.status}}</td>
         <td>{{ flight.purchase_date }}</td>
         <td>{{ flight.booking_agent_id}}</td>
     </tr>
@@ -131,7 +131,7 @@
     <input type="submit" value="Show my Recent Spending">
 </form>
 
-{% if total %}
+{% if total != None and monthwise_label %}
 <br>My Total Spending in the Past 6 Month: {{ total }}<br>
 <canvas id="myChart1" width="800" height="400"></canvas>
 <script>
@@ -212,7 +212,7 @@ var myChart = new Chart(ctx, {
     <input type="submit" value="Search"/>
 </form>
 
-{% if total_option %}
+{% if total_option != None and monthwise_label_option %}
 <br>My Total Spending in the Period: {{ total_option }}<br>
 <canvas id="myChart2" width="800" height="400"></canvas>
 <script>
@@ -282,9 +282,6 @@ var myChart = new Chart(ctx, {
 </script>
 {% endif %}
 
-{% if message_trackMySpendingOptional %}
-    <p><strong>{{ message_trackMySpendingOptional }}</strong></p>
-{% endif %}
 
 <style type="text/css">
     table, th, td{
