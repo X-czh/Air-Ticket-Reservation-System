@@ -96,13 +96,16 @@ def purchaseTickets():
 		GROUP BY airline_name, flight_num '''
 	cursor.execute(query, (airline_name, flight_num))
 	data = cursor.fetchone()
-	if data['count'] < data['seats']:
+	count = data['count'] if data['count'] != None else 0
+	seat = data['seat'] if data['seat'] != None else 0
+
+	if count < seat:
 		msg = "Purchase successful!"
 		# generates ticket_id
 		query = 'SELECT COUNT(*) as count FROM ticket'
 		cursor.execute(query)
 		data = cursor.fetchone()
-		ticket_id = data['count'] + 1
+		ticket_id = count + 1
 		# executes updates
 		ins_ticket = 'INSERT INTO ticket VALUES(%s, %s, %s)'
 		cursor.execute(ins_ticket, (ticket_id, airline_name, flight_num))
